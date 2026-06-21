@@ -4,7 +4,7 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/events", label: "Events" },
   { href: "/rsvp", label: "RSVP" },
-  { href: "/registry", label: "Registry" },
+  { href: "/registry", label: "Gift Registry" },
   { href: "/updates", label: "Updates" },
 ];
 

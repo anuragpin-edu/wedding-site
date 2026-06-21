@@ -86,6 +86,15 @@ See `.env.example` for the full list. Rules:
 - `SUPABASE_SERVICE_ROLE_KEY` is server-only — never `NEXT_PUBLIC_`.
 - All secrets in env vars, never in code or committed to the repo.
 
+## Media plan (Phase 7)
+Home page layout, top to bottom:
+1. **Hero** — best couple photo as background + dark gradient scrim for text legibility; names, date, countdown, RSVP over it. (Photo, not video — instant load, emotional anchor.)
+2. **The Celebrations** — the 3 event cards.
+3. **Ambient video bands** — 2–3 short (6–10s) muted, autoplaying, lazy-loaded loops via Cloudflare Stream as section accents. IntersectionObserver: only load/play when scrolled near, pause off-screen. Cap at ~3 autoplaying loops total for performance.
+4. **Gallery** — photo grid; longer videos are tap-to-play here (unlimited, since they download only on tap).
+
+Extra sections to build (confirmed of interest, prioritize): Our Story / timeline, Travel & Stay (hotels, ATL airport, parking), FAQ, Add-to-Calendar buttons per event. Optional/lower: schedule timeline view, dress-code color swatches, opt-in background music (off by default).
+
 ## Things to NEVER do
 - Store photos or videos in the database — use R2 / Cloudflare Stream.
 - Expose `SUPABASE_SERVICE_ROLE_KEY` to the browser or commit any secret.
