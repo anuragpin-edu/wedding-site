@@ -34,6 +34,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# local dev helpers (kept out of the repo)
+/scripts/seed-test-party.mjs
+
 # vercel
 .vercel
 
