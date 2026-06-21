@@ -6,7 +6,7 @@ export default function Footer() {
           Anurag <span className="text-marigold">&amp;</span> Thanmai
         </p>
         <p className="mt-1 text-sm text-foreground/60">
-          August 22, 2026 &middot; Georgia
+          August 22, 2026
         </p>
         <p className="mt-4 text-xs text-foreground/45">
           With love &amp; gratitude — we can&apos;t wait to celebrate with you.
