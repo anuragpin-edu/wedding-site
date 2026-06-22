@@ -17,27 +17,10 @@ export async function getEvents(): Promise<Event[]> {
   return data ?? [];
 }
 
-// "August 21, 2026"
-export function formatEventDate(date: string): string {
-  return new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-// "07:30:00" -> "7:30 AM"
-export function formatEventTime(time: string): string {
-  const [h, m] = time.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hour12 = h % 12 === 0 ? 12 : h % 12;
-  return `${hour12}:${m.toString().padStart(2, "0")} ${period}`;
-}
-
-// Google Maps directions link from a plain address.
-export function mapsLink(address: string): string {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    address
-  )}`;
-}
+// Re-export the client-safe formatters so existing imports keep working.
+export {
+  formatEventDate,
+  formatEventTime,
+  mapsLink,
+  EVENT_TZ_LABEL,
+} from "@/lib/eventFormat";

@@ -121,7 +121,7 @@ CREATE TABLE keep_alive (
 -- ============================================================
 
 INSERT INTO events (name, date, start_time, venue, address, dress_code, display_order) VALUES
-  ('Haldi',               '2026-08-21', '07:30', 'Outdoor Venue',    '6695 Dawsonville Hwy, Dawsonville, GA',        'Yellow',      1),
+  ('Haldi',               '2026-08-21', '07:30', 'Farmhouse',        '6695 Dawsonville Hwy, Dawsonville, GA',        'Yellow',      1),
   ('Sangeeth & Mehendi',  '2026-08-21', '20:00', 'Venue',            '4680 W Morton Rd, Johns Creek, GA 30022',      'Party wear',  2),
   ('Wedding',             '2026-08-22', '11:00', 'Banjara Banquets', '1656 Buford Hwy, Cumming, GA 30041',           'Traditional', 3);
 

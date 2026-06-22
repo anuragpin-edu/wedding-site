@@ -83,20 +83,31 @@ export async function getPartyByToken(token: string): Promise<PartyData | null> 
   return party ? assemble(party) : null;
 }
 
-// Look up a party by the primary's email + mobile (cross-device retrieval).
-// Requires BOTH to match exactly — un-guessable, so no enumeration risk.
-export async function getPartyByContact(
-  email: string,
-  phone: string
-): Promise<PartyData | null> {
+// Look up a party by the primary's email and/or mobile (cross-device
+// retrieval). At least one is required. If a single field matches more than
+// one party, the caller is asked for the other to disambiguate.
+export type FindResult =
+  | { kind: "none" }
+  | { kind: "ambiguous" }
+  | { kind: "one"; data: PartyData };
+
+export async function findParty(
+  email?: string,
+  phone?: string
+): Promise<FindResult> {
+  const e = email ? normalizeEmail(email) : "";
+  const p = phone ? normalizePhone(phone) : "";
+  if (!e && !p) return { kind: "none" };
+
   const supabase = createServiceClient();
-  const { data: party } = await supabase
-    .from("parties")
-    .select("*")
-    .eq("contact_email", normalizeEmail(email))
-    .eq("contact_phone", normalizePhone(phone))
-    .maybeSingle();
-  return party ? assemble(party) : null;
+  let q = supabase.from("parties").select("*");
+  if (e) q = q.eq("contact_email", e);
+  if (p) q = q.eq("contact_phone", p);
+
+  const { data: matches } = await q;
+  if (!matches || matches.length === 0) return { kind: "none" };
+  if (matches.length > 1) return { kind: "ambiguous" };
+  return { kind: "one", data: await assemble(matches[0]) };
 }
 
 // For the first-time RSVP form, which only needs the event list.

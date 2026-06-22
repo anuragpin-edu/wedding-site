@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import type { Event } from "@/types/database";
 import type { PartyData, PartyGuest } from "@/lib/rsvp";
+import { formatEventDate, formatEventTime, mapsLink } from "@/lib/eventFormat";
+import { MapPinIcon } from "@/components/icons";
 
 type Person = {
   id?: string;
@@ -157,8 +159,8 @@ export default function RsvpClient({ events }: { events: Event[] }) {
   }
 
   async function doLookup() {
-    if (!lkEmail.trim() || !lkPhone.trim()) {
-      setLkError("Enter the email and mobile you RSVP'd with.");
+    if (!lkEmail.trim() && !lkPhone.trim()) {
+      setLkError("Enter the email or mobile you RSVP'd with.");
       return;
     }
     setLkBusy(true);
@@ -220,8 +222,16 @@ export default function RsvpClient({ events }: { events: Event[] }) {
           </button>
           {showLookup && (
             <div className="mx-auto mt-3 max-w-sm space-y-2 rounded-xl border border-gold/25 bg-white/60 p-4 text-left">
-              <input className={input} type="email" placeholder="Email you used" value={lkEmail} onChange={(e) => setLkEmail(e.target.value)} />
-              <input className={input} type="tel" placeholder="Mobile you used" value={lkPhone} onChange={(e) => setLkPhone(e.target.value)} />
+              <p className="text-sm text-foreground/70">
+                Enter the email or mobile you used to RSVP — either one works.
+              </p>
+              <input className={input} type="email" placeholder="Email" value={lkEmail} onChange={(e) => setLkEmail(e.target.value)} />
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wide text-foreground/40">
+                <span className="h-px flex-1 bg-gold/30" />
+                or
+                <span className="h-px flex-1 bg-gold/30" />
+              </div>
+              <input className={input} type="tel" placeholder="Mobile" value={lkPhone} onChange={(e) => setLkPhone(e.target.value)} />
               {lkError && <p className="text-xs text-maroon">{lkError}</p>}
               <button
                 onClick={doLookup}
@@ -285,25 +295,65 @@ export default function RsvpClient({ events }: { events: Event[] }) {
             </div>
 
             <div className="mt-4">
-              <p className="mb-2 text-xs uppercase tracking-wide text-foreground/55">Attending</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="mb-2 text-xs uppercase tracking-wide text-foreground/55">
+                Which celebrations will they attend?
+              </p>
+              <div className="space-y-2">
                 {events.map((event) => {
                   const on = !!person.attendance[event.id];
                   return (
-                    <button
+                    <div
                       key={event.id}
-                      type="button"
+                      role="checkbox"
+                      aria-checked={on}
+                      tabIndex={0}
                       onClick={() => toggleEvent(i, event.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === " " || e.key === "Enter") {
+                          e.preventDefault();
+                          toggleEvent(i, event.id);
+                        }
+                      }}
                       className={
-                        "rounded-full border px-3.5 py-1.5 text-sm transition-colors " +
+                        "cursor-pointer rounded-xl border p-3 transition-colors " +
                         (on
-                          ? "border-maroon bg-maroon text-white"
-                          : "border-gold/40 bg-background text-foreground/70 hover:border-maroon/50")
+                          ? "border-maroon bg-maroon/5"
+                          : "border-gold/30 bg-background hover:border-maroon/40")
                       }
                     >
-                      {on ? "✓ " : ""}
-                      {event.name}
-                    </button>
+                      <div className="flex items-start gap-3">
+                        <span
+                          className={
+                            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-xs " +
+                            (on
+                              ? "border-maroon bg-maroon text-white"
+                              : "border-gold/50 text-transparent")
+                          }
+                        >
+                          ✓
+                        </span>
+                        <div className="flex-1 text-sm">
+                          <p className="font-medium text-foreground">{event.name}</p>
+                          <p className="text-xs text-foreground/70">
+                            {formatEventDate(event.date)} &middot; {formatEventTime(event.start_time)}
+                          </p>
+                          <p className="text-xs text-foreground/60">
+                            {event.venue ? `${event.venue} — ` : ""}
+                            {event.address}
+                          </p>
+                          <a
+                            href={mapsLink(event.address)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="mt-0.5 inline-flex items-center gap-1 text-xs text-maroon underline decoration-gold/40 underline-offset-2 hover:decoration-maroon"
+                          >
+                            <MapPinIcon className="h-3 w-3" />
+                            View on Google Maps
+                          </a>
+                        </div>
+                      </div>
+                    </div>
                   );
                 })}
               </div>

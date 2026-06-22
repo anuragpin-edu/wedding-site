@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Countdown from "@/components/Countdown";
 import EventCard from "@/components/EventCard";
-import { getEvents, formatEventDate, formatEventTime } from "@/lib/getEvents";
+import { getEvents } from "@/lib/getEvents";
 
 export default async function HomePage() {
   const events = await getEvents();
@@ -65,15 +65,6 @@ export default async function HomePage() {
             ))}
           </div>
         )}
-
-        <div className="mt-12 text-center text-sm text-foreground/55">
-          {events.map((e, i) => (
-            <span key={e.id}>
-              {i > 0 && <span className="mx-2 text-gold">&bull;</span>}
-              {e.name}: {formatEventDate(e.date)} at {formatEventTime(e.start_time)}
-            </span>
-          ))}
-        </div>
       </section>
     </>
   );
