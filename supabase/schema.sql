@@ -8,13 +8,22 @@
 -- TABLES
 -- ============================================================
 
--- Invite groups (one per family/couple/individual invitation)
+-- Parties — created by guests themselves via the unified RSVP link.
+-- Identified by the primary guest's email + mobile (stored normalized).
+-- invite_code is an internal edit token kept in the guest's browser.
 CREATE TABLE parties (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   invite_code   TEXT UNIQUE NOT NULL,
   display_name  TEXT NOT NULL,
+  contact_email TEXT,
+  contact_phone TEXT,
   created_at    TIMESTAMPTZ DEFAULT now()
 );
+
+-- One party per email+phone pair — prevents duplicate self-registrations.
+CREATE UNIQUE INDEX parties_contact_unique
+  ON parties (contact_email, contact_phone)
+  WHERE contact_email IS NOT NULL AND contact_phone IS NOT NULL;
 
 -- Individual people within a party
 CREATE TABLE guests (

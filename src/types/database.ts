@@ -3,8 +3,10 @@
 
 export type Party = {
   id: string;
-  invite_code: string;
+  invite_code: string; // internal edit token (stored in the browser)
   display_name: string;
+  contact_email: string | null; // normalized: lowercased
+  contact_phone: string | null; // normalized: digits only
   created_at: string;
 };
 
