@@ -59,15 +59,20 @@ keep_alive      — single-row table pinged daily by GitHub Actions
 
 Full schema SQL is in `supabase/schema.sql` (created in Phase 2).
 
-## Auth model
-- **Guests:** no accounts. Access via unique invite code in URL (`/rsvp/[invite_code]`).
+## Auth / RSVP model (self-registration)
+- **One unified link for everyone:** `/rsvp` (no per-party invite codes sent out).
+- **Guests self-register:** the primary enters full name + **email + mobile (both required)** and adds party members + per-event attendance. No pre-loaded guest list, so there's no "who hasn't RSVP'd" tracking by design (Anurag chases people over WhatsApp).
+- **Identity = email + mobile** (stored normalized: email lowercased, phone digits-only). A unique index on `(contact_email, contact_phone)` guarantees one party per person — resubmitting **updates** rather than duplicates.
+- **`parties.invite_code`** is now an internal random **edit token** kept in the browser (localStorage `rsvp:current`), not something mailed out.
+- **Return visits:** same browser auto-loads via the token; a new device uses "Find my RSVP" (exact email + mobile — un-guessable, so no guest-list enumeration).
+- **Server-side only:** guest tables stay deny-by-default under RLS; all RSVP reads/writes go through `/api/rsvp/*` routes using the service role. Never expose a public name-search of guests.
 - **Admin (Anurag):** Supabase Auth on `/admin` routes only.
-- **localStorage:** after RSVP submit, store `{ invite_code, rsvp_status }` as convenience cache. Supabase is source of truth.
 
 ## Registry behavior
 - Items link to external stores (Amazon, IKEA, etc.) — no payment processing on this site.
-- Guest claims an item with their name + optional note. Item shows as "Taken by [Name]".
-- Claims are permanent — admin unclaims from dashboard if needed.
+- Claim has two states: **"planning to buy"** (soft 6-hour hold that auto-releases) and **"already bought"** (permanent; requires a mandatory **order ID** so an accidental click can't mark it purchased).
+- Every claim requires name + email + phone (stored for the couple's reference only, never shown publicly) and silently links to the claimer's party via their cached RSVP token.
+- `registry_claims` is deny-by-default under RLS; only the claimer's first name is ever sent to the browser.
 
 ## Notifications
 - **Web Push** with VAPID keys — no email (no Resend), no programmatic SMS.

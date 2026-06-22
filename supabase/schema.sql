@@ -8,13 +8,22 @@
 -- TABLES
 -- ============================================================
 
--- Invite groups (one per family/couple/individual invitation)
+-- Parties — created by guests themselves via the unified RSVP link.
+-- Identified by the primary guest's email + mobile (stored normalized).
+-- invite_code is an internal edit token kept in the guest's browser.
 CREATE TABLE parties (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   invite_code   TEXT UNIQUE NOT NULL,
   display_name  TEXT NOT NULL,
+  contact_email TEXT,
+  contact_phone TEXT,
   created_at    TIMESTAMPTZ DEFAULT now()
 );
+
+-- One party per email+phone pair — prevents duplicate self-registrations.
+CREATE UNIQUE INDEX parties_contact_unique
+  ON parties (contact_email, contact_phone)
+  WHERE contact_email IS NOT NULL AND contact_phone IS NOT NULL;
 
 -- Individual people within a party
 CREATE TABLE guests (
@@ -112,7 +121,7 @@ CREATE TABLE keep_alive (
 -- ============================================================
 
 INSERT INTO events (name, date, start_time, venue, address, dress_code, display_order) VALUES
-  ('Haldi',               '2026-08-21', '07:30', 'Outdoor Venue',    '6695 Dawsonville Hwy, Dawsonville, GA',        'Yellow',      1),
+  ('Haldi',               '2026-08-21', '07:30', 'Farmhouse',        '6695 Dawsonville Hwy, Dawsonville, GA',        'Yellow',      1),
   ('Sangeeth & Mehendi',  '2026-08-21', '20:00', 'Venue',            '4680 W Morton Rd, Johns Creek, GA 30022',      'Party wear',  2),
   ('Wedding',             '2026-08-22', '11:00', 'Banjara Banquets', '1656 Buford Hwy, Cumming, GA 30041',           'Traditional', 3);
 

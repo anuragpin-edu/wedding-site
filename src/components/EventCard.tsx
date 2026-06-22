@@ -1,5 +1,6 @@
 import type { Event } from "@/types/database";
 import { formatEventDate, formatEventTime, mapsLink } from "@/lib/getEvents";
+import { MapPinIcon } from "@/components/icons";
 
 // A tasteful per-event placeholder banner until real photos land (Phase 7).
 const banners: Record<string, string> = {
@@ -40,14 +41,16 @@ export default function EventCard({ event }: { event: Event }) {
           </div>
           <div className="flex gap-2">
             <dt className="w-20 shrink-0 text-foreground/55">Address</dt>
-            <dd>
+            <dd className="space-y-1">
+              <p className="text-foreground/85">{event.address}</p>
               <a
                 href={mapsLink(event.address)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-maroon underline decoration-gold/40 underline-offset-2 hover:decoration-maroon"
+                className="inline-flex items-center gap-1.5 text-maroon underline decoration-gold/40 underline-offset-2 hover:decoration-maroon"
               >
-                {event.address}
+                <MapPinIcon />
+                View on Google Maps
               </a>
             </dd>
           </div>
