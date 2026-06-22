@@ -48,6 +48,8 @@ CREATE TABLE event_attendance (
 );
 
 -- Gift registry items
+-- status: 'available' | 'planning' (soft hold) | 'purchased' (permanent)
+-- held_until: when a 'planning' hold expires (6h); past it, the item is free again
 CREATE TABLE registry_items (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title          TEXT NOT NULL,
@@ -55,17 +57,28 @@ CREATE TABLE registry_items (
   image_url      TEXT,
   price          NUMERIC(10, 2),
   store_url      TEXT NOT NULL,
-  status         TEXT NOT NULL DEFAULT 'available' CHECK (status IN ('available', 'claimed')),
+  status         TEXT NOT NULL DEFAULT 'available'
+                   CHECK (status IN ('available', 'planning', 'purchased')),
+  held_until     TIMESTAMPTZ,
   display_order  INT,
   created_at     TIMESTAMPTZ DEFAULT now()
 );
 
--- Registry claims (guest claims an item with their name)
+-- Registry claims — contact info is for the couple's reference only, never
+-- sent to the browser. party_id links the claim to a party when the claimer
+-- has already RSVP'd on that browser.
 CREATE TABLE registry_claims (
   id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   registry_item_id  UUID NOT NULL REFERENCES registry_items(id) ON DELETE CASCADE,
   claimer_name      TEXT NOT NULL,
+  claimer_email     TEXT,
+  claimer_phone     TEXT,
   claimer_message   TEXT,
+  order_id          TEXT, -- required when status = 'purchased'
+  status            TEXT NOT NULL DEFAULT 'planning'
+                      CHECK (status IN ('planning', 'purchased')),
+  party_id          UUID REFERENCES parties(id) ON DELETE SET NULL,
+  released          BOOLEAN NOT NULL DEFAULT false,
   claimed_at        TIMESTAMPTZ DEFAULT now()
 );
 
@@ -150,16 +163,12 @@ CREATE POLICY "registry items are public"
   USING (true);
 
 -- ------------------------------------------------------------
--- registry_claims: anyone can insert a claim; no reads by guests (admin only)
+-- registry_claims: deny-by-default. Claims hold contact info (email/phone),
+-- so no anon access at all — all reads/writes go through server-side API
+-- routes using the service role, which only ever send the claimer's name to
+-- the browser.
 -- ------------------------------------------------------------
-CREATE POLICY "guests can claim items"
-  ON registry_claims FOR INSERT
-  WITH CHECK (true);
-
--- guests can read claims to see who claimed what (claimer_name only, no email)
-CREATE POLICY "claims are public"
-  ON registry_claims FOR SELECT
-  USING (true);
+-- (intentionally no policies for registry_claims)
 
 -- ------------------------------------------------------------
 -- announcements: only published ones are public

@@ -42,7 +42,8 @@ export type RegistryItem = {
   image_url: string | null;
   price: number | null;
   store_url: string;
-  status: "available" | "claimed";
+  status: "available" | "planning" | "purchased";
+  held_until: string | null;
   display_order: number | null;
   created_at: string;
 };
@@ -51,7 +52,13 @@ export type RegistryClaim = {
   id: string;
   registry_item_id: string;
   claimer_name: string;
+  claimer_email: string | null;
+  claimer_phone: string | null;
   claimer_message: string | null;
+  order_id: string | null;
+  status: "planning" | "purchased";
+  party_id: string | null;
+  released: boolean;
   claimed_at: string;
 };
 

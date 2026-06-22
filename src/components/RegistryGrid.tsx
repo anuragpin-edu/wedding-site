@@ -1,0 +1,299 @@
+"use client";
+
+import { useState } from "react";
+import type { RegistryItemView } from "@/lib/registry";
+
+function priceLabel(price: number | null) {
+  if (price == null) return null;
+  return `$${price.toFixed(2)}`;
+}
+
+// Pull the most recent invite code the guest used to RSVP on this browser, so
+// a claim can be silently linked to their party in the DB. Set by RsvpForm as
+// rsvp:<code>. This is invisible to the guest — purely for the couple's view.
+function cachedInviteCode(): string | null {
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("rsvp:")) {
+        const v = JSON.parse(localStorage.getItem(key) || "{}");
+        if (v?.invite_code) return v.invite_code as string;
+      }
+    }
+  } catch {}
+  return null;
+}
+
+type Contact = { name: string; email: string; phone: string };
+type ClaimResult = { status: "planning" | "purchased"; name: string };
+
+async function postClaim(
+  itemId: string,
+  intent: "planning" | "purchased",
+  c: Contact,
+  message: string,
+  orderId: string
+): Promise<ClaimResult> {
+  const res = await fetch("/api/registry/claim", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      item_id: itemId,
+      intent,
+      claimer_name: c.name,
+      claimer_email: c.email,
+      claimer_phone: c.phone,
+      claimer_message: message,
+      order_id: orderId,
+      invite_code: cachedInviteCode(),
+    }),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || "Something went wrong.");
+  return { status: json.status, name: json.claimed_by ?? c.name };
+}
+
+function ClaimForm({
+  itemId,
+  onlyPurchased,
+  onClaimed,
+}: {
+  itemId: string;
+  onlyPurchased?: boolean;
+  onClaimed: (r: ClaimResult) => void;
+}) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [orderId, setOrderId] = useState("");
+  // "choose" shows plan/bought options; "purchase" shows the order-ID step.
+  const [mode, setMode] = useState<"choose" | "purchase">(
+    onlyPurchased ? "purchase" : "choose"
+  );
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  function contactValid() {
+    if (!name.trim() || !email.trim() || !phone.trim()) {
+      setError("Name, email, and phone are all required.");
+      return false;
+    }
+    return true;
+  }
+
+  async function submit(intent: "planning" | "purchased") {
+    if (!contactValid()) return;
+    if (intent === "purchased" && !orderId.trim()) {
+      setError("Please enter your order ID to confirm the purchase.");
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      const result = await postClaim(
+        itemId,
+        intent,
+        { name: name.trim(), email: email.trim(), phone: phone.trim() },
+        message,
+        orderId.trim()
+      );
+      onClaimed(result);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong.");
+      setBusy(false);
+    }
+  }
+
+  function goToPurchase() {
+    if (!contactValid()) return;
+    setError("");
+    setMode("purchase");
+  }
+
+  const input =
+    "w-full rounded-lg border border-gold/30 bg-background px-3 py-2 text-sm outline-none focus:border-maroon";
+
+  return (
+    <div className="mt-3 space-y-2 border-t border-gold/20 pt-3">
+      <input className={input} placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
+      <input className={input} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input className={input} type="tel" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+
+      {mode === "purchase" ? (
+        <>
+          <input
+            className={input}
+            placeholder="Order ID (from your receipt / confirmation)"
+            value={orderId}
+            onChange={(e) => setOrderId(e.target.value)}
+          />
+          <input
+            className={input}
+            placeholder="Note to the couple (optional)"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          {error && <p className="text-xs text-maroon">{error}</p>}
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => submit("purchased")}
+            className="w-full rounded-full bg-maroon px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-maroon-dark disabled:opacity-60"
+          >
+            {busy ? "Saving…" : "Confirm purchase"}
+          </button>
+          {!onlyPurchased && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode("choose");
+                setError("");
+              }}
+              className="w-full text-center text-xs text-foreground/55 hover:text-maroon"
+            >
+              ← Back
+            </button>
+          )}
+        </>
+      ) : (
+        <>
+          <input
+            className={input}
+            placeholder="Note to the couple (optional)"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          {error && <p className="text-xs text-maroon">{error}</p>}
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => submit("planning")}
+            className="w-full rounded-full bg-maroon px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-maroon-dark disabled:opacity-60"
+          >
+            {busy ? "Saving…" : "I'm planning to buy this"}
+          </button>
+          <button
+            type="button"
+            onClick={goToPurchase}
+            className="w-full rounded-full border border-maroon/30 px-4 py-2 text-sm font-medium text-maroon transition-colors hover:bg-maroon/5"
+          >
+            I&apos;ve already bought this
+          </button>
+          <p className="text-center text-[11px] text-foreground/50">
+            A plan holds the gift for 6 hours. Already bought it? Confirming asks
+            for your order ID.
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
+function Card({ item }: { item: RegistryItemView }) {
+  const [state, setState] = useState<{
+    status: "available" | "planning" | "purchased";
+    name: string | null;
+  }>({ status: item.effective_status, name: item.claimed_by });
+  const [showForm, setShowForm] = useState(false);
+
+  function handleClaimed(r: ClaimResult) {
+    setState({ status: r.status, name: r.name });
+    setShowForm(false);
+  }
+
+  const dimmed = state.status === "purchased";
+
+  return (
+    <article
+      className={
+        "flex flex-col overflow-hidden rounded-2xl border border-gold/25 bg-white/60 " +
+        (dimmed ? "opacity-75" : "")
+      }
+    >
+      <div className="flex h-44 items-center justify-center bg-gradient-to-br from-cream to-marigold/20">
+        {item.image_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.image_url} alt={item.title} className="h-full w-full object-cover" />
+        ) : (
+          <span className="font-display text-lg text-gold">No image yet</span>
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col p-5">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="font-display text-xl font-semibold text-foreground">{item.title}</h3>
+          {priceLabel(item.price) && (
+            <span className="shrink-0 text-sm text-maroon">{priceLabel(item.price)}</span>
+          )}
+        </div>
+
+        {item.description && <p className="mt-2 text-sm text-foreground/70">{item.description}</p>}
+
+        <div className="mt-4 flex-1" />
+
+        <a
+          href={item.store_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-maroon underline decoration-gold/40 underline-offset-2 hover:decoration-maroon"
+        >
+          View in store ↗
+        </a>
+
+        {state.status === "purchased" ? (
+          <div className="mt-4 rounded-lg border border-sage/40 bg-sage/10 px-3 py-2 text-center text-sm text-foreground/75">
+            Purchased{state.name ? <> by <span className="font-medium">{state.name}</span></> : ""}
+          </div>
+        ) : state.status === "planning" ? (
+          <div className="mt-4 space-y-2">
+            <div className="rounded-lg border border-marigold/40 bg-marigold/10 px-3 py-2 text-center text-sm text-foreground/75">
+              On hold{state.name ? <> by <span className="font-medium">{state.name}</span></> : ""}
+              <span className="block text-[11px] text-foreground/55">
+                Soft hold — reopens if not confirmed within 6 hours
+              </span>
+            </div>
+            {showForm ? (
+              <ClaimForm itemId={item.id} onlyPurchased onClaimed={handleClaimed} />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowForm(true)}
+                className="w-full text-center text-xs text-maroon/70 hover:text-maroon"
+              >
+                I&apos;m the buyer — confirm purchase
+              </button>
+            )}
+          </div>
+        ) : showForm ? (
+          <ClaimForm itemId={item.id} onClaimed={handleClaimed} />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowForm(true)}
+            className="mt-4 w-full rounded-full border border-maroon/30 px-4 py-2 text-sm font-medium text-maroon transition-colors hover:bg-maroon/5"
+          >
+            Claim this gift
+          </button>
+        )}
+      </div>
+    </article>
+  );
+}
+
+export default function RegistryGrid({ items }: { items: RegistryItemView[] }) {
+  if (items.length === 0) {
+    return (
+      <p className="text-center text-foreground/60">
+        Our registry is being put together — check back soon.
+      </p>
+    );
+  }
+  return (
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item) => (
+        <Card key={item.id} item={item} />
+      ))}
+    </div>
+  );
+}
