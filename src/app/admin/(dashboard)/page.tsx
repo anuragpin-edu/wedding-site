@@ -62,8 +62,8 @@ export default async function AdminOverview() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Parties" value={o.parties} />
         <Stat label="Total guests" value={o.guests} />
-        <Stat label="Registry: planning" value={o.planning} />
-        <Stat label="Registry: purchased" value={o.purchased} />
+        <Stat label="Gift registry: planning" value={o.planning} />
+        <Stat label="Gift registry: purchased" value={o.purchased} />
       </div>
 
       <div>
@@ -87,7 +87,7 @@ export default async function AdminOverview() {
           View all RSVPs
         </Link>
         <Link href="/admin/registry" className="rounded-full border border-maroon/30 px-5 py-2 text-sm font-medium text-maroon hover:bg-maroon/5">
-          Manage registry
+          Manage gift registry
         </Link>
       </div>
     </div>

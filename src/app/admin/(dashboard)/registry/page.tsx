@@ -32,7 +32,7 @@ export default async function AdminRegistry() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl font-semibold text-maroon">Registry</h1>
+        <h1 className="font-display text-3xl font-semibold text-maroon">Gift Registry</h1>
         <p className="mt-1 text-sm text-foreground/60">{items.length} items</p>
       </div>
 
