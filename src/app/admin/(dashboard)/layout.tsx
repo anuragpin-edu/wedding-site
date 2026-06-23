@@ -8,7 +8,6 @@ const nav = [
   { href: "/admin/rsvps", label: "RSVPs" },
   { href: "/admin/registry", label: "Registry" },
   { href: "/admin/announcements", label: "Announcements" },
-  { href: "/admin/profile", label: "Profile" },
 ];
 
 async function signOut() {
@@ -32,31 +31,41 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-gold/20 bg-cream/40">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-5 py-3">
-          <div className="flex items-center gap-5">
-            <span className="font-display text-lg font-semibold text-maroon">
+        <div className="mx-auto max-w-3xl px-5">
+          {/* Top row: brand + account */}
+          <div className="flex items-center justify-between gap-4 py-3">
+            <Link
+              href="/admin"
+              className="font-display text-lg font-semibold tracking-wide text-maroon"
+            >
               Wedding Admin
-            </span>
-            <nav className="flex gap-4 text-sm">
-              {nav.map((n) => (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  className="text-foreground/70 transition-colors hover:text-maroon"
-                >
-                  {n.label}
-                </Link>
-              ))}
-            </nav>
+            </Link>
+            <div className="flex items-center gap-4 text-sm">
+              <Link
+                href="/admin/profile"
+                className="text-foreground/60 transition-colors hover:text-maroon"
+              >
+                {displayName}
+              </Link>
+              <form action={signOut}>
+                <button className="rounded-full border border-maroon/30 px-3.5 py-1 text-maroon transition-colors hover:bg-maroon/5">
+                  Sign out
+                </button>
+              </form>
+            </div>
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-foreground/60">{displayName}</span>
-            <form action={signOut}>
-              <button className="rounded-full border border-maroon/30 px-3 py-1 text-maroon hover:bg-maroon/5">
-                Sign out
-              </button>
-            </form>
-          </div>
+          {/* Nav row */}
+          <nav className="flex flex-wrap gap-6 pb-2 text-sm">
+            {nav.map((n) => (
+              <Link
+                key={n.href}
+                href={n.href}
+                className="text-foreground/70 transition-colors hover:text-maroon"
+              >
+                {n.label}
+              </Link>
+            ))}
+          </nav>
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-5 py-8">{children}</main>
