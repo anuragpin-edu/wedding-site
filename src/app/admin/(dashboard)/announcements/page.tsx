@@ -1,5 +1,10 @@
 import { createServiceClient } from "@/lib/supabase/service";
-import { createAnnouncement, setPublished, deleteAnnouncement } from "./actions";
+import {
+  createAnnouncement,
+  setPublished,
+  deleteAnnouncement,
+  pushAnnouncement,
+} from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +37,10 @@ export default async function AdminAnnouncements() {
           <input type="checkbox" name="published" defaultChecked />
           Publish immediately
         </label>
+        <label className="flex items-center gap-2 text-sm text-foreground/70">
+          <input type="checkbox" name="send_push" />
+          Also send a push notification to everyone who opted in
+        </label>
         <button className="rounded-full bg-maroon px-5 py-2 text-sm font-medium text-white hover:bg-maroon-dark">
           Save
         </button>
@@ -61,7 +70,15 @@ export default async function AdminAnnouncements() {
                   </div>
                   <p className="mt-1 whitespace-pre-wrap text-sm text-foreground/70">{a.body}</p>
                 </div>
-                <div className="flex shrink-0 gap-2">
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  {a.published && (
+                    <form action={pushAnnouncement}>
+                      <input type="hidden" name="id" value={a.id} />
+                      <button className="rounded-full border border-sage/50 px-3 py-1 text-sm text-sage hover:bg-sage/10">
+                        Send push
+                      </button>
+                    </form>
+                  )}
                   <form action={setPublished}>
                     <input type="hidden" name="id" value={a.id} />
                     <input type="hidden" name="published" value={(!a.published).toString()} />
