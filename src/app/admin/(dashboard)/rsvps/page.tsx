@@ -1,6 +1,7 @@
 import { getAllRsvps } from "@/lib/adminData";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "RSVPs" };
 
 function attendList(
   attendance: Record<string, boolean>,

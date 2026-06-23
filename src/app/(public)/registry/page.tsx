@@ -7,7 +7,7 @@ import ComingSoon from "@/components/ComingSoon";
 import { registryEnabled } from "@/lib/features";
 
 export const metadata: Metadata = {
-  title: "Gift Registry — Anurag & Thanmai",
+  title: "Gift Registry",
   description:
     "Our gift registry. Browse, buy from your favorite store, and claim a gift so others know it's taken.",
 };

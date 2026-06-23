@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ForgotForm from "@/components/admin/ForgotForm";
 
 export const metadata: Metadata = {
-  title: "Admin — Reset password",
+  title: "Reset password",
   robots: { index: false, follow: false },
 };
 

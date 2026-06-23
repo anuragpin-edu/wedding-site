@@ -7,6 +7,7 @@ import {
 } from "./actions";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Announcements" };
 
 const input =
   "w-full rounded-lg border border-gold/30 bg-white px-3 py-2 text-sm outline-none focus:border-maroon";

@@ -3,7 +3,7 @@ import EventCard from "@/components/EventCard";
 import { getEvents } from "@/lib/getEvents";
 
 export const metadata: Metadata = {
-  title: "Events — Anurag & Thanmai",
+  title: "Events",
   description:
     "Haldi, Sangeeth & Mehendi, and the Wedding — details, times, venues, and dress codes.",
 };

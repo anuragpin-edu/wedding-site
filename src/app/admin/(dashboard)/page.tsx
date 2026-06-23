@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Overview" };
 
 async function getOverview() {
   const supabase = createServiceClient();
