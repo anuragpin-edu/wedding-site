@@ -5,6 +5,7 @@ import type { Event } from "@/types/database";
 import type { PartyData, PartyGuest } from "@/lib/rsvp";
 import { formatEventDate, formatEventTime, mapsLink } from "@/lib/eventFormat";
 import { MapPinIcon } from "@/components/icons";
+import Turnstile, { turnstileConfigured } from "@/components/Turnstile";
 
 type Person = {
   id?: string;
@@ -63,6 +64,7 @@ export default function RsvpClient({ events }: { events: Event[] }) {
 
   const [status, setStatus] = useState<"idle" | "saving" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [tsToken, setTsToken] = useState<string | null>(null); // Turnstile
 
   // Lookup (cross-device) UI
   const [showLookup, setShowLookup] = useState(false);
@@ -130,6 +132,11 @@ export default function RsvpClient({ events }: { events: Event[] }) {
       setMessage("Please enter a name for everyone in your party.");
       return;
     }
+    if (turnstileConfigured && !tsToken) {
+      setStatus("error");
+      setMessage("Please complete the spam check below.");
+      return;
+    }
     setStatus("saving");
     setMessage("");
     try {
@@ -142,6 +149,7 @@ export default function RsvpClient({ events }: { events: Event[] }) {
           phone,
           guests: people,
           removedGuestIds,
+          turnstile_token: tsToken,
         }),
       });
       const json = await res.json();
@@ -374,6 +382,10 @@ export default function RsvpClient({ events }: { events: Event[] }) {
           {message}
         </p>
       )}
+
+      <div className="flex justify-center">
+        <Turnstile onToken={setTsToken} />
+      </div>
 
       <button
         onClick={submit}

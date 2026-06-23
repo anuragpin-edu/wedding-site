@@ -1,9 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { limitByIp } from "@/lib/rateLimit";
 
 // Store a browser's push subscription. Upsert by endpoint so re-subscribing on
 // the same browser doesn't create duplicates.
 export async function POST(req: NextRequest) {
+  const limit = limitByIp(req, "push-subscribe", 20, 60_000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many requests." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
+    );
+  }
+
   let body: {
     endpoint?: string;
     keys?: { p256dh?: string; auth?: string };

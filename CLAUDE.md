@@ -100,6 +100,12 @@ Home page layout, top to bottom:
 
 Extra sections to build (confirmed of interest, prioritize): Our Story / timeline, Travel & Stay (hotels, ATL airport, parking), FAQ, Add-to-Calendar buttons per event. Optional/lower: schedule timeline view, dress-code color swatches, opt-in background music (off by default).
 
+## Security (Phase 10)
+- **RLS audited** against the live DB: sensitive tables (`parties`, `guests`, `event_attendance`, `registry_claims`, `push_subscriptions`) return 0 rows and reject writes via the anon key. Public-read only on `events`, `registry_items`, `settings`, and published `announcements`.
+- **Rate limiting** (`src/lib/rateLimit.ts`, in-memory per-IP) on `/api/rsvp/submit` (15/min), `/api/rsvp/lookup` (10/min), `/api/registry/claim` (15/min), `/api/push/subscribe` (20/min).
+- **Cloudflare Turnstile** (`src/lib/turnstile.ts` + `Turnstile.tsx`) on the RSVP and registry-claim forms — **gracefully optional**: the widget shows and tokens are verified only when `NEXT_PUBLIC_TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY` are set. Add real keys after creating a Cloudflare account.
+- **Security headers** in `next.config.ts`: X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, HSTS.
+
 ## Things to NEVER do
 - Store photos or videos in the database — use R2 / Cloudflare Stream.
 - Expose `SUPABASE_SERVICE_ROLE_KEY` to the browser or commit any secret.
