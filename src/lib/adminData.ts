@@ -83,7 +83,16 @@ export type AdminClaim = {
   claimed_at: string;
 };
 
-export type AdminRegistryItem = RegistryItem & { claim: AdminClaim | null };
+export type AdminRegistryItem = RegistryItem & {
+  // Effective status after applying the 6-hour hold expiry — matches what the
+  // public registry shows, so the two views never disagree.
+  effective_status: "available" | "planning" | "purchased";
+  claim: AdminClaim | null;
+};
+
+function holdLive(held_until: string | null): boolean {
+  return held_until != null && new Date(held_until).getTime() > Date.now();
+}
 
 // Registry items with the active (non-released) claim and its contact details
 // for the couple's reference. Contact info is admin-only and never public.
@@ -120,5 +129,17 @@ export async function getRegistryAdmin(): Promise<AdminRegistryItem[]> {
     }
   }
 
-  return (items ?? []).map((it) => ({ ...it, claim: claimByItem.get(it.id) ?? null }));
+  return (items ?? []).map((it) => {
+    // A planning hold that has expired counts as available again — so don't
+    // show its (now stale) claim as active.
+    let effective: AdminRegistryItem["effective_status"] = "available";
+    if (it.status === "purchased") effective = "purchased";
+    else if (it.status === "planning" && holdLive(it.held_until)) effective = "planning";
+
+    return {
+      ...it,
+      effective_status: effective,
+      claim: effective === "available" ? null : claimByItem.get(it.id) ?? null,
+    };
+  });
 }

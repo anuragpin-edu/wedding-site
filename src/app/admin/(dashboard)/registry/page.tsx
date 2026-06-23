@@ -74,7 +74,7 @@ export default async function AdminRegistry() {
               <div>
                 <div className="flex items-center gap-2">
                   <p className="font-medium text-foreground">{it.title}</p>
-                  <StatusBadge status={it.status} />
+                  <StatusBadge status={it.effective_status} />
                 </div>
                 <p className="text-sm text-foreground/60">
                   {it.price != null ? `$${it.price.toFixed(2)}` : "—"} ·{" "}

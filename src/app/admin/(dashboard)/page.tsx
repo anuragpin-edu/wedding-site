@@ -5,13 +5,12 @@ export const dynamic = "force-dynamic";
 
 async function getOverview() {
   const supabase = createServiceClient();
-  const [parties, guests, events, attendance, items, claims] = await Promise.all([
+  const [parties, guests, events, attendance, items] = await Promise.all([
     supabase.from("parties").select("id", { count: "exact", head: true }),
     supabase.from("guests").select("id", { count: "exact", head: true }),
     supabase.from("events").select("id, name, display_order").order("display_order"),
     supabase.from("event_attendance").select("event_id, attending").eq("attending", true),
-    supabase.from("registry_items").select("id, status"),
-    supabase.from("registry_claims").select("id, status, released"),
+    supabase.from("registry_items").select("id, status, held_until"),
   ]);
 
   const attendingByEvent = new Map<string, number>();
@@ -19,15 +18,23 @@ async function getOverview() {
     attendingByEvent.set(row.event_id, (attendingByEvent.get(row.event_id) ?? 0) + 1);
   }
 
-  const activeClaims = (claims.data ?? []).filter((c) => !c.released);
+  // Count by the item's *effective* status (a planning hold past its expiry no
+  // longer counts), matching the public registry.
+  const now = Date.now();
+  const itemRows = items.data ?? [];
+  const planning = itemRows.filter(
+    (i) => i.status === "planning" && i.held_until != null && new Date(i.held_until).getTime() > now
+  ).length;
+  const purchased = itemRows.filter((i) => i.status === "purchased").length;
+
   return {
     parties: parties.count ?? 0,
     guests: guests.count ?? 0,
     events: events.data ?? [],
     attendingByEvent,
-    items: items.data ?? [],
-    planning: activeClaims.filter((c) => c.status === "planning").length,
-    purchased: activeClaims.filter((c) => c.status === "purchased").length,
+    items: itemRows,
+    planning,
+    purchased,
   };
 }
 

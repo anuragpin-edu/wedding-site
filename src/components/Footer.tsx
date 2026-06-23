@@ -1,7 +1,7 @@
 import { MailIcon } from "@/components/icons";
 
 const contacts = [
-  { name: "Anurag", email: "anuragpin.edu@gmail.com" },
+  { name: "Anurag", email: "anurag.pinnadari@gmail.com" },
   { name: "Thanmai", email: "travoori@gmail.com" },
 ];
 
