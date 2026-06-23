@@ -1,0 +1,37 @@
+name: Supabase keep-alive
+
+# Supabase free projects pause after 7 days with no database activity. This
+# workflow writes to the keep_alive table once a day so the project stays warm.
+# It uses the ANON key (a GitHub secret) — never the service-role key.
+
+on:
+  schedule:
+    # 06:17 UTC daily. (Off the hour to avoid GitHub's busy scheduling windows.)
+    - cron: "17 6 * * *"
+  workflow_dispatch: {} # allows a manual run from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update keep_alive row
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+          now="$(date -u +%FT%TZ)"
+          status=$(curl -sS -o /tmp/resp.txt -w "%{http_code}" \
+            -X PATCH "$SUPABASE_URL/rest/v1/keep_alive?id=eq.1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d "{\"pinged_at\": \"$now\"}")
+          echo "HTTP $status"
+          cat /tmp/resp.txt
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "Keep-alive ping failed."
+            exit 1
+          fi
+          echo "Keep-alive ping succeeded at $now."

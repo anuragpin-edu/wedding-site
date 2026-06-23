@@ -110,11 +110,14 @@ CREATE TABLE push_subscriptions (
   created_at  TIMESTAMPTZ DEFAULT now()
 );
 
--- Keep-alive (pinged daily by GitHub Actions to prevent Supabase free-tier pausing)
+-- Keep-alive — single row updated daily by GitHub Actions (anon key) to
+-- prevent the Supabase free project pausing for inactivity. The CHECK keeps
+-- it to exactly one row so it never grows.
 CREATE TABLE keep_alive (
-  id        UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id        SMALLINT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
   pinged_at TIMESTAMPTZ DEFAULT now()
 );
+INSERT INTO keep_alive (id, pinged_at) VALUES (1, now());
 
 -- ============================================================
 -- SEED: The 3 events
@@ -199,16 +202,17 @@ CREATE POLICY "no guest reads of push subscriptions"
   USING (false);
 
 -- ------------------------------------------------------------
--- keep_alive: service role only (GitHub Actions uses anon key via REST,
--- but we grant anon insert so the cron job works without service role)
+-- keep_alive: the daily GitHub Action updates the single row using the anon
+-- key, so anon gets UPDATE + SELECT here (never the service role).
 -- ------------------------------------------------------------
-CREATE POLICY "anon can ping keep_alive"
-  ON keep_alive FOR INSERT
-  WITH CHECK (true);
-
 CREATE POLICY "anon can read keep_alive"
   ON keep_alive FOR SELECT
   USING (true);
+
+CREATE POLICY "anon can update keep_alive"
+  ON keep_alive FOR UPDATE
+  USING (true)
+  WITH CHECK (true);
 
 -- ============================================================
 -- Done. Verify by checking Tables in the Supabase dashboard.
