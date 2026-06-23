@@ -3,6 +3,8 @@ import RegistryGrid from "@/components/RegistryGrid";
 import { getRegistryItems } from "@/lib/registry";
 import { getSetting, SHIPPING_ADDRESS } from "@/lib/settings";
 import CopyButton from "@/components/CopyButton";
+import ComingSoon from "@/components/ComingSoon";
+import { registryEnabled } from "@/lib/features";
 
 export const metadata: Metadata = {
   title: "Gift Registry — Anurag & Thanmai",
@@ -14,6 +16,16 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function RegistryPage() {
+  // Hidden from the public until we're ready (REGISTRY_ENABLED=false in prod).
+  if (!registryEnabled()) {
+    return (
+      <ComingSoon
+        title="Gift Registry"
+        note="Our gift registry is being put together with love. Check back soon."
+      />
+    );
+  }
+
   const [items, shippingAddress] = await Promise.all([
     getRegistryItems(),
     getSetting(SHIPPING_ADDRESS),
