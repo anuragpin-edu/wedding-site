@@ -14,9 +14,9 @@ export default function EventCard({ event }: { event: Event }) {
   const banner = banners[event.name] ?? "from-gold/70 to-maroon/60";
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-gold/25 bg-white/60 shadow-sm">
+    <article className="rounded-2xl border border-gold/25 bg-white/60 shadow-sm">
       <div
-        className={`flex h-32 items-center justify-center bg-gradient-to-br ${banner} sm:h-40`}
+        className={`flex h-32 items-center justify-center rounded-t-2xl bg-gradient-to-br ${banner} sm:h-40`}
       >
         <span className="font-display text-3xl font-semibold text-white drop-shadow-sm sm:text-4xl">
           {event.name}
