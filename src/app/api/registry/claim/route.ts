@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { HOLD_HOURS } from "@/lib/registry";
+import { limitByIp, getClientIp } from "@/lib/rateLimit";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 type Payload = {
   item_id: string;
@@ -22,11 +24,26 @@ const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 //   - purchased → as long as it isn't already purchased (a real purchase wins
 //     over anyone's soft hold)
 export async function POST(req: NextRequest) {
-  let body: Payload;
+  const limit = limitByIp(req, "registry-claim", 15, 60_000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many requests — please wait a moment and try again." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
+    );
+  }
+
+  let body: Payload & { turnstile_token?: string };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
+  }
+
+  if (!(await verifyTurnstile(body.turnstile_token, getClientIp(req)))) {
+    return NextResponse.json(
+      { error: "Spam check failed. Please refresh and try again." },
+      { status: 400 }
+    );
   }
 
   const name = body.claimer_name?.trim();

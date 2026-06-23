@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { RegistryItemView } from "@/lib/registry";
+import Turnstile, { turnstileConfigured } from "@/components/Turnstile";
 
 function priceLabel(price: number | null) {
   if (price == null) return null;
@@ -57,7 +58,8 @@ async function postClaim(
   intent: "planning" | "purchased",
   c: Contact,
   message: string,
-  orderId: string
+  orderId: string,
+  turnstileToken: string | null
 ): Promise<ClaimResult> {
   const res = await fetch("/api/registry/claim", {
     method: "POST",
@@ -71,6 +73,7 @@ async function postClaim(
       claimer_message: message,
       order_id: orderId,
       invite_code: cachedInviteCode(),
+      turnstile_token: turnstileToken,
     }),
   });
   const json = await res.json();
@@ -94,6 +97,7 @@ function ClaimForm({
   const [phone, setPhone] = useState(initialContact?.phone ?? "");
   const [message, setMessage] = useState("");
   const [orderId, setOrderId] = useState("");
+  const [tsToken, setTsToken] = useState<string | null>(null); // Turnstile
   // "choose" shows plan/bought options; "purchase" shows the order-ID step.
   const [mode, setMode] = useState<"choose" | "purchase">(
     onlyPurchased ? "purchase" : "choose"
@@ -115,11 +119,15 @@ function ClaimForm({
       setError("Please enter your order ID to confirm the purchase.");
       return;
     }
+    if (turnstileConfigured && !tsToken) {
+      setError("Please complete the spam check below.");
+      return;
+    }
     setBusy(true);
     setError("");
     const contact = { name: name.trim(), email: email.trim(), phone: phone.trim() };
     try {
-      const result = await postClaim(itemId, intent, contact, message, orderId.trim());
+      const result = await postClaim(itemId, intent, contact, message, orderId.trim(), tsToken);
       // Remember a hold so confirming it later doesn't re-ask for details;
       // clear it once the purchase is confirmed.
       if (intent === "planning") setHold(itemId, contact);
@@ -145,6 +153,7 @@ function ClaimForm({
       <input className={input} placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
       <input className={input} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
       <input className={input} type="tel" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+      <Turnstile onToken={setTsToken} />
 
       {mode === "purchase" ? (
         <>

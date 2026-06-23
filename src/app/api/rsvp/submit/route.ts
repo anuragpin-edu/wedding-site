@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { createServiceClient } from "@/lib/supabase/service";
 import { normalizeEmail, normalizePhone } from "@/lib/rsvp";
+import { limitByIp, getClientIp } from "@/lib/rateLimit";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 type IncomingGuest = {
   id?: string;
@@ -25,11 +27,26 @@ const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // primary's email + mobile; submitting again with the same pair updates the
 // existing RSVP rather than creating a duplicate.
 export async function POST(req: NextRequest) {
-  let body: Payload;
+  const limit = limitByIp(req, "rsvp-submit", 15, 60_000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many requests — please wait a moment and try again." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
+    );
+  }
+
+  let body: Payload & { turnstile_token?: string };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
+  }
+
+  if (!(await verifyTurnstile(body.turnstile_token, getClientIp(req)))) {
+    return NextResponse.json(
+      { error: "Spam check failed. Please refresh and try again." },
+      { status: 400 }
+    );
   }
 
   const email = normalizeEmail(body.email ?? "");
