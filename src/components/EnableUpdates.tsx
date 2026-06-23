@@ -22,6 +22,7 @@ const VAPID = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!;
 export default function EnableUpdates() {
   const [state, setState] = useState<State>("loading");
   const [busy, setBusy] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -60,9 +61,12 @@ export default function EnableUpdates() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...sub.toJSON(), userAgent: navigator.userAgent }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error(`Saving subscription failed (${res.status}).`);
+      setErrorMsg("");
       setState("enabled");
-    } catch {
+    } catch (e) {
+      console.error("Push enable failed:", e);
+      setErrorMsg(e instanceof Error ? e.message : String(e));
       setState("default");
     } finally {
       setBusy(false);
@@ -195,6 +199,11 @@ export default function EnableUpdates() {
           Not now
         </button>
       </div>
+      {errorMsg && (
+        <p className="mt-3 text-xs text-maroon">
+          Couldn&apos;t enable: {errorMsg}
+        </p>
+      )}
     </div>
   );
 }

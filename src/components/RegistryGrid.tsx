@@ -27,6 +27,31 @@ function cachedInviteCode(): string | null {
 type Contact = { name: string; email: string; phone: string };
 type ClaimResult = { status: "planning" | "purchased"; name: string };
 
+// Remember the contact details *this* browser used to place a hold on a
+// specific item, so confirming the purchase later doesn't ask for them again.
+// Keyed per item — never reused across items or people.
+function holdKey(itemId: string) {
+  return `registry:hold:${itemId}`;
+}
+function getHold(itemId: string): Contact | null {
+  try {
+    const v = localStorage.getItem(holdKey(itemId));
+    return v ? (JSON.parse(v) as Contact) : null;
+  } catch {
+    return null;
+  }
+}
+function setHold(itemId: string, c: Contact) {
+  try {
+    localStorage.setItem(holdKey(itemId), JSON.stringify(c));
+  } catch {}
+}
+function clearHold(itemId: string) {
+  try {
+    localStorage.removeItem(holdKey(itemId));
+  } catch {}
+}
+
 async function postClaim(
   itemId: string,
   intent: "planning" | "purchased",
@@ -56,15 +81,17 @@ async function postClaim(
 function ClaimForm({
   itemId,
   onlyPurchased,
+  initialContact,
   onClaimed,
 }: {
   itemId: string;
   onlyPurchased?: boolean;
+  initialContact?: Contact | null;
   onClaimed: (r: ClaimResult) => void;
 }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [name, setName] = useState(initialContact?.name ?? "");
+  const [email, setEmail] = useState(initialContact?.email ?? "");
+  const [phone, setPhone] = useState(initialContact?.phone ?? "");
   const [message, setMessage] = useState("");
   const [orderId, setOrderId] = useState("");
   // "choose" shows plan/bought options; "purchase" shows the order-ID step.
@@ -90,14 +117,13 @@ function ClaimForm({
     }
     setBusy(true);
     setError("");
+    const contact = { name: name.trim(), email: email.trim(), phone: phone.trim() };
     try {
-      const result = await postClaim(
-        itemId,
-        intent,
-        { name: name.trim(), email: email.trim(), phone: phone.trim() },
-        message,
-        orderId.trim()
-      );
+      const result = await postClaim(itemId, intent, contact, message, orderId.trim());
+      // Remember a hold so confirming it later doesn't re-ask for details;
+      // clear it once the purchase is confirmed.
+      if (intent === "planning") setHold(itemId, contact);
+      else clearHold(itemId);
       onClaimed(result);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
@@ -122,6 +148,11 @@ function ClaimForm({
 
       {mode === "purchase" ? (
         <>
+          {onlyPurchased && initialContact && (
+            <p className="text-[11px] text-sage">
+              ✓ We filled in your details from your hold — just add your order ID.
+            </p>
+          )}
           <input
             className={input}
             placeholder="Order ID (from your receipt / confirmation)"
@@ -254,7 +285,12 @@ function Card({ item }: { item: RegistryItemView }) {
               </span>
             </div>
             {showForm ? (
-              <ClaimForm itemId={item.id} onlyPurchased onClaimed={handleClaimed} />
+              <ClaimForm
+                itemId={item.id}
+                onlyPurchased
+                initialContact={getHold(item.id)}
+                onClaimed={handleClaimed}
+              />
             ) : (
               <button
                 type="button"

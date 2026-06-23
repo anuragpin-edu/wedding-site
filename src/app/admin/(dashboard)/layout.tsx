@@ -32,7 +32,7 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-gold/20 bg-cream/40">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-3">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 px-5 py-3">
           <div className="flex items-center gap-5">
             <span className="font-display text-lg font-semibold text-maroon">
               Wedding Admin
@@ -59,7 +59,7 @@ export default async function AdminLayout({
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-5 py-8">{children}</main>
+      <main className="mx-auto max-w-3xl px-5 py-8">{children}</main>
     </div>
   );
 }
