@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { getRegistryAdmin } from "@/lib/adminData";
+import { getSetting, SHIPPING_ADDRESS } from "@/lib/settings";
 import { createItem, deleteItem, releaseClaim } from "./actions";
+import ShippingAddressEditor from "@/components/admin/ShippingAddressEditor";
+import { PencilIcon, TrashIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -21,13 +24,27 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default async function AdminRegistry() {
-  const items = await getRegistryAdmin();
+  const [items, shippingAddress] = await Promise.all([
+    getRegistryAdmin(),
+    getSetting(SHIPPING_ADDRESS),
+  ]);
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="font-display text-3xl font-semibold text-maroon">Registry</h1>
         <p className="mt-1 text-sm text-foreground/60">{items.length} items</p>
+      </div>
+
+      {/* Shipping address shown on the public registry page */}
+      <div className="space-y-2 rounded-2xl border border-gold/25 bg-white/60 p-5">
+        <p className="font-medium text-foreground">&ldquo;Ship gifts to&rdquo; address</p>
+        <p className="text-xs text-foreground/55">
+          Shown on the public registry so guests know where to send gifts.
+        </p>
+        <div className="pt-1">
+          <ShippingAddressEditor address={shippingAddress} />
+        </div>
       </div>
 
       {/* Add item */}
@@ -66,25 +83,31 @@ export default async function AdminRegistry() {
                   </a>
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Link
-                  href={`/admin/registry/${it.id}`}
-                  className="rounded-full border border-maroon/30 px-3 py-1 text-sm text-maroon hover:bg-maroon/5"
-                >
-                  Edit
-                </Link>
+              <div className="flex items-center gap-1">
                 {it.claim && (
                   <form action={releaseClaim}>
                     <input type="hidden" name="id" value={it.id} />
-                    <button className="rounded-full border border-marigold/50 px-3 py-1 text-sm text-gold hover:bg-marigold/10">
+                    <button className="rounded-full border border-marigold/50 px-3 py-1 text-xs text-gold hover:bg-marigold/10">
                       Release claim
                     </button>
                   </form>
                 )}
+                <Link
+                  href={`/admin/registry/${it.id}`}
+                  aria-label="Edit item"
+                  title="Edit"
+                  className="rounded-md p-1.5 text-foreground/45 transition-colors hover:bg-maroon/5 hover:text-maroon"
+                >
+                  <PencilIcon />
+                </Link>
                 <form action={deleteItem}>
                   <input type="hidden" name="id" value={it.id} />
-                  <button className="rounded-full border border-maroon/30 px-3 py-1 text-sm text-maroon/70 hover:bg-maroon/5">
-                    Delete
+                  <button
+                    aria-label="Delete item"
+                    title="Delete"
+                    className="rounded-md p-1.5 text-foreground/45 transition-colors hover:bg-maroon/10 hover:text-maroon"
+                  >
+                    <TrashIcon />
                   </button>
                 </form>
               </div>

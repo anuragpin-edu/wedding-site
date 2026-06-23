@@ -110,6 +110,14 @@ CREATE TABLE push_subscriptions (
   created_at  TIMESTAMPTZ DEFAULT now()
 );
 
+-- Settings — small key/value store for admin-editable site values (e.g. the
+-- registry "ship gifts to" address). Public-read; admin writes via service role.
+CREATE TABLE settings (
+  key        TEXT PRIMARY KEY,
+  value      TEXT,
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- Keep-alive — single row updated daily by GitHub Actions (anon key) to
 -- prevent the Supabase free project pausing for inactivity. The CHECK keeps
 -- it to exactly one row so it never grows.
@@ -141,6 +149,7 @@ ALTER TABLE registry_claims    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE announcements      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE keep_alive         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE settings           ENABLE ROW LEVEL SECURITY;
 
 -- ------------------------------------------------------------
 -- SENSITIVE GUEST TABLES — parties, guests, event_attendance
@@ -213,6 +222,13 @@ CREATE POLICY "anon can update keep_alive"
   ON keep_alive FOR UPDATE
   USING (true)
   WITH CHECK (true);
+
+-- ------------------------------------------------------------
+-- settings: public read; admin writes via the service role only.
+-- ------------------------------------------------------------
+CREATE POLICY "settings are public"
+  ON settings FOR SELECT
+  USING (true);
 
 -- ============================================================
 -- Done. Verify by checking Tables in the Supabase dashboard.

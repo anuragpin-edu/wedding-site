@@ -3,10 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { getAdminUser } from "@/lib/admin";
 import { createServiceClient } from "@/lib/supabase/service";
+import { setSetting, SHIPPING_ADDRESS } from "@/lib/settings";
 
 async function requireAdmin() {
   const user = await getAdminUser();
   if (!user) throw new Error("Unauthorized");
+}
+
+// The "ship gifts to" address shown on the public registry page.
+export async function saveShippingAddress(formData: FormData) {
+  await requireAdmin();
+  await setSetting(SHIPPING_ADDRESS, (formData.get("shipping_address") ?? "").toString().trim());
+  revalidatePath("/admin/registry");
+  revalidatePath("/registry");
 }
 
 function num(v: FormDataEntryValue | null): number | null {
