@@ -1,6 +1,7 @@
 import type { Event } from "@/types/database";
 import { formatEventDate, formatEventTime, mapsLink } from "@/lib/getEvents";
-import { MapPinIcon } from "@/components/icons";
+import { MapPinIcon, CalendarIcon, ClockIcon } from "@/components/icons";
+import AddToCalendar from "@/components/AddToCalendar";
 
 // A tasteful per-event placeholder banner until real photos land (Phase 7).
 const banners: Record<string, string> = {
@@ -23,11 +24,15 @@ export default function EventCard({ event }: { event: Event }) {
       </div>
 
       <div className="space-y-3 p-5 sm:p-6">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <p className="font-medium text-foreground">
+        <div className="space-y-1.5">
+          <p className="flex items-center gap-2 font-medium text-foreground">
+            <CalendarIcon className="h-4 w-4 text-gold" />
             {formatEventDate(event.date)}
           </p>
-          <p className="text-maroon">{formatEventTime(event.start_time)}</p>
+          <p className="flex items-center gap-2 text-maroon">
+            <ClockIcon className="h-4 w-4 text-gold" />
+            {formatEventTime(event.start_time)}
+          </p>
         </div>
 
         {event.description && (
@@ -61,6 +66,10 @@ export default function EventCard({ event }: { event: Event }) {
             </div>
           )}
         </dl>
+
+        <div className="pt-1">
+          <AddToCalendar event={event} />
+        </div>
       </div>
     </article>
   );

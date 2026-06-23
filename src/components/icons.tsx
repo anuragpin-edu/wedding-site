@@ -32,6 +32,52 @@ export function MapPinIcon({ className = "h-3.5 w-3.5" }: IconProps) {
   );
 }
 
+export function CalendarIcon({ className = "h-3.5 w-3.5" }: IconProps) {
+  return (
+    <Base className={className}>
+      <path d="M8 2v4M16 2v4" />
+      <rect width="18" height="18" x="3" y="4" rx="2" />
+      <path d="M3 10h18" />
+    </Base>
+  );
+}
+
+export function ClockIcon({ className = "h-3.5 w-3.5" }: IconProps) {
+  return (
+    <Base className={className}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </Base>
+  );
+}
+
+export function CalendarPlusIcon({ className = "h-4 w-4" }: IconProps) {
+  return (
+    <Base className={className}>
+      <path d="M8 2v4M16 2v4" />
+      <rect width="18" height="18" x="3" y="4" rx="2" />
+      <path d="M3 10h18M12 14v4M10 16h4" />
+    </Base>
+  );
+}
+
+export function MailIcon({ className = "h-4 w-4" }: IconProps) {
+  return (
+    <Base className={className}>
+      <rect width="20" height="16" x="2" y="4" rx="2" />
+      <path d="m2 7 10 6 10-6" />
+    </Base>
+  );
+}
+
+export function PhoneIcon({ className = "h-4 w-4" }: IconProps) {
+  return (
+    <Base className={className}>
+      <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
+    </Base>
+  );
+}
+
 export function PencilIcon({ className = "h-4 w-4" }: IconProps) {
   return (
     <Base className={className}>
