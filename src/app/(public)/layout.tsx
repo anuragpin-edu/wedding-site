@@ -7,10 +7,12 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    // One seamless patterned surface behind the whole public site — header,
+    // content, and footer all share it, so nothing looks boxed.
+    <div className="themed-pattern flex min-h-screen flex-col">
       <Nav />
-      <main className="flex-1">{children}</main>
+      <main className="animate-page flex-1">{children}</main>
       <Footer />
-    </>
+    </div>
   );
 }

@@ -62,10 +62,30 @@ h3,
   }
 }
 
-/* Subtle, thematic tiled bunny motif laid over a section's background color.
-   The motif is transparent except faint gold bunnies, so the element's own
-   bg color (set via Tailwind) shows through and tints each section. */
+/* Subtle South Indian / saree-inspired motif — a faint gold lotus-rosette
+   kolam lattice tiled across the whole site so the background reads as one
+   seamless, ethnic-patterned surface (no boxed sections). */
 .themed-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='64'%3E%3Cg%20fill='%23b8893b'%20fill-opacity='0.06'%3E%3Cellipse%20cx='18'%20cy='16'%20rx='2.4'%20ry='6.2'%20transform='rotate(-12%2018%2016)'/%3E%3Cellipse%20cx='26'%20cy='16'%20rx='2.4'%20ry='6.2'%20transform='rotate(12%2026%2016)'/%3E%3Ccircle%20cx='22'%20cy='27'%20r='7'/%3E%3Ccircle%20cx='48'%20cy='48'%20r='2'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 64px 64px;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='80'%20height='80'%3E%3Cg%20fill='%23b8893b'%20fill-opacity='0.05'%3E%3Ccircle%20cx='40'%20cy='40'%20r='3'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(45%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(90%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(135%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(180%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(225%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(270%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(315%2040%2040)'/%3E%3Ccircle%20cx='0'%20cy='40'%20r='2'/%3E%3Ccircle%20cx='80'%20cy='40'%20r='2'/%3E%3Ccircle%20cx='40'%20cy='0'%20r='2'/%3E%3Ccircle%20cx='40'%20cy='80'%20r='2'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+/* Gentle entrance for page content. */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-page {
+  animation: fade-in-up 0.5s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-page {
+    animation: none;
+  }
 }

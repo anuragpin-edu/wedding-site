@@ -12,9 +12,8 @@ export default async function EventsPage() {
   const events = await getEvents();
 
   return (
-    <div className="themed-pattern bg-marigold/5">
-      <div className="mx-auto max-w-3xl px-5 py-16">
-        <div className="mb-10 text-center">
+    <div className="mx-auto max-w-3xl px-5 py-16">
+      <div className="mb-10 text-center">
         <h1 className="font-display text-4xl font-semibold text-maroon sm:text-5xl">
           Our Events
         </h1>
@@ -34,7 +33,6 @@ export default async function EventsPage() {
           ))}
         </div>
       )}
-      </div>
     </div>
   );
 }
