@@ -34,7 +34,7 @@ export default async function HomePage() {
               RSVP
             </Link>
             <Link
-              href="/events"
+              href="/#celebrations"
               className="rounded-full border border-maroon/30 px-7 py-3 text-sm font-medium text-maroon transition-colors hover:bg-maroon/5"
             >
               View Events
@@ -43,8 +43,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Events preview */}
-      <section className="mx-auto max-w-5xl px-5 py-16">
+      {/* Events — the single source (the Events nav link scrolls here) */}
+      <section id="celebrations" className="mx-auto max-w-5xl scroll-mt-20 px-5 py-16">
         <div className="mb-10 text-center">
           <h2 className="font-display text-4xl font-semibold text-maroon">
             The Celebrations

@@ -4,7 +4,7 @@ import BunnyMark from "@/components/BunnyMark";
 
 const allLinks = [
   { href: "/", label: "Home" },
-  { href: "/events", label: "Events" },
+  { href: "/#celebrations", label: "Events" },
   { href: "/rsvp", label: "RSVP" },
   { href: "/registry", label: "Gift Registry" },
   { href: "/updates", label: "Updates" },

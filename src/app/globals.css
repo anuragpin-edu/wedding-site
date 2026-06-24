@@ -21,8 +21,12 @@
   --color-gold: var(--gold);
   --color-sage: var(--sage);
   --color-cream: var(--cream);
-  --font-serif: var(--font-cormorant);
+  --font-serif: var(--font-display);
   --font-sans: var(--font-geist-sans);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -35,7 +39,7 @@ h1,
 h2,
 h3,
 .font-display {
-  font-family: var(--font-cormorant), Georgia, serif;
+  font-family: var(--font-display), Georgia, serif;
 }
 
 /* Gentle hopping bunny in the header. */
