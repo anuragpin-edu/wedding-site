@@ -4,7 +4,7 @@ import BunnyMark from "@/components/BunnyMark";
 
 const allLinks = [
   { href: "/", label: "Home" },
-  { href: "/#celebrations", label: "Events" },
+  { href: "/events", label: "Events" },
   { href: "/rsvp", label: "RSVP" },
   { href: "/registry", label: "Gift Registry" },
   { href: "/updates", label: "Updates" },
@@ -16,7 +16,7 @@ export default function Nav() {
     (l) => l.href !== "/registry" || registryEnabled()
   );
   return (
-    <header className="sticky top-0 z-40 border-b border-gold/20 bg-background/92 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-gold/15 bg-background/60 backdrop-blur-md">
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3">
         <Link
           href="/"
