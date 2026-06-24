@@ -63,11 +63,35 @@ h3,
 }
 
 /* Subtle South Indian / saree-inspired motif — a faint gold lotus-rosette
-   kolam lattice tiled across the whole site so the background reads as one
-   seamless, ethnic-patterned surface (no boxed sections). */
+   kolam lattice. Painted on a ::before layer behind the content and masked so
+   it fades out at the very top and bottom, leaving the header and footer clean
+   (no pattern bleeding into them). */
 .themed-pattern {
+  position: relative;
+  isolation: isolate;
+}
+.themed-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='80'%20height='80'%3E%3Cg%20fill='%23b8893b'%20fill-opacity='0.05'%3E%3Ccircle%20cx='40'%20cy='40'%20r='3'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(45%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(90%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(135%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(180%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(225%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(270%2040%2040)'/%3E%3Cellipse%20cx='40'%20cy='25'%20rx='3.4'%20ry='10.5'%20transform='rotate(315%2040%2040)'/%3E%3Ccircle%20cx='0'%20cy='40'%20r='2'/%3E%3Ccircle%20cx='80'%20cy='40'%20r='2'/%3E%3Ccircle%20cx='40'%20cy='0'%20r='2'/%3E%3Ccircle%20cx='40'%20cy='80'%20r='2'/%3E%3C/g%3E%3C/svg%3E");
   background-size: 80px 80px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 130px,
+    #000 calc(100% - 200px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 130px,
+    #000 calc(100% - 200px),
+    transparent 100%
+  );
 }
 
 /* Gentle entrance for page content. */

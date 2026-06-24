@@ -1,6 +1,6 @@
 import type { Event } from "@/types/database";
 import { formatEventDate, formatEventTime, mapsLink } from "@/lib/getEvents";
-import { MapPinIcon, CalendarIcon, ClockIcon } from "@/components/icons";
+import { MapPinIcon, CalendarIcon, ClockIcon, HangerIcon } from "@/components/icons";
 import AddToCalendar from "@/components/AddToCalendar";
 
 // A tasteful per-event placeholder banner until real photos land (Phase 7).
@@ -59,13 +59,14 @@ export default function EventCard({ event }: { event: Event }) {
               </a>
             </dd>
           </div>
-          {event.dress_code && (
-            <div className="flex gap-2">
-              <dt className="w-20 shrink-0 text-foreground/55">Dress</dt>
-              <dd className="text-foreground/85">{event.dress_code}</dd>
-            </div>
-          )}
         </dl>
+
+        {event.dress_code && (
+          <p className="flex items-center gap-2 text-sm text-foreground/85">
+            <HangerIcon className="h-4 w-4 text-gold" />
+            Dress code: <span className="font-medium">{event.dress_code}</span>
+          </p>
+        )}
 
         <div className="pt-1">
           <AddToCalendar event={event} />

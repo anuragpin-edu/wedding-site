@@ -114,3 +114,12 @@ export function CheckIcon({ className = "h-4 w-4" }: IconProps) {
     </Base>
   );
 }
+
+export function HangerIcon({ className = "h-4 w-4" }: IconProps) {
+  return (
+    <Base className={className}>
+      <path d="M12 9V7.6a2 2 0 1 1 2-2" />
+      <path d="M12 9 3.6 15.5a1 1 0 0 0 .6 1.8h15.6a1 1 0 0 0 .6-1.8L12 9Z" />
+    </Base>
+  );
+}

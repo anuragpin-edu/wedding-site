@@ -304,7 +304,11 @@ export default function RsvpClient({ events }: { events: Event[] }) {
 
             <div className="mt-4">
               <p className="mb-2 text-xs uppercase tracking-wide text-foreground/55">
-                Which celebrations will they attend?
+                {person.is_primary
+                  ? "Which celebrations will you attend?"
+                  : person.full_name.trim()
+                    ? `Which celebrations will ${person.full_name.trim().split(/\s+/)[0]} attend?`
+                    : "Which celebrations will this guest attend?"}
               </p>
               <div className="space-y-2">
                 {events.map((event) => {
