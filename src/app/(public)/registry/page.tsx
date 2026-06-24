@@ -32,8 +32,9 @@ export default async function RegistryPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-5xl px-5 py-16">
-      <div className="mb-10 text-center">
+    <div className="themed-pattern bg-maroon/5">
+      <div className="mx-auto max-w-5xl px-5 py-16">
+        <div className="mb-10 text-center">
         <h1 className="font-display text-4xl font-semibold text-maroon sm:text-5xl">
           Gift Registry
         </h1>
@@ -54,7 +55,8 @@ export default async function RegistryPage() {
         </div>
       )}
 
-      <RegistryGrid items={items} />
+        <RegistryGrid items={items} />
+      </div>
     </div>
   );
 }

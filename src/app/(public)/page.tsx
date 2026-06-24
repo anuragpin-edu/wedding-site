@@ -43,8 +43,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Events preview */}
-      <section className="mx-auto max-w-5xl px-5 py-16">
+      {/* Events preview — subtle patterned band */}
+      <section className="themed-pattern bg-cream/40">
+        <div className="mx-auto max-w-5xl px-5 py-16">
         <div className="mb-10 text-center">
           <h2 className="font-display text-4xl font-semibold text-maroon">
             The Celebrations
@@ -65,6 +66,7 @@ export default async function HomePage() {
             ))}
           </div>
         )}
+        </div>
       </section>
     </>
   );

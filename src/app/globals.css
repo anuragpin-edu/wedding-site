@@ -37,3 +37,35 @@ h3,
 .font-display {
   font-family: var(--font-cormorant), Georgia, serif;
 }
+
+/* Gentle hopping bunny in the header. */
+@keyframes bunny-hop {
+  0%,
+  55%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+  20% {
+    transform: translateY(-6px) scaleY(1.05);
+  }
+  40% {
+    transform: translateY(0) scaleY(0.93);
+  }
+}
+.bunny-hop {
+  animation: bunny-hop 1.7s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bunny-hop {
+    animation: none;
+  }
+}
+
+/* Subtle, thematic tiled bunny motif laid over a section's background color.
+   The motif is transparent except faint gold bunnies, so the element's own
+   bg color (set via Tailwind) shows through and tints each section. */
+.themed-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='64'%3E%3Cg%20fill='%23b8893b'%20fill-opacity='0.06'%3E%3Cellipse%20cx='18'%20cy='16'%20rx='2.4'%20ry='6.2'%20transform='rotate(-12%2018%2016)'/%3E%3Cellipse%20cx='26'%20cy='16'%20rx='2.4'%20ry='6.2'%20transform='rotate(12%2026%2016)'/%3E%3Ccircle%20cx='22'%20cy='27'%20r='7'/%3E%3Ccircle%20cx='48'%20cy='48'%20r='2'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 64px 64px;
+}
