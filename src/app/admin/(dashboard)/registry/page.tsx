@@ -24,8 +24,13 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-export default async function AdminRegistry() {
-  const [items, shippingAddress] = await Promise.all([
+export default async function AdminRegistry({
+  searchParams,
+}: {
+  searchParams: Promise<{ added?: string }>;
+}) {
+  const [{ added }, items, shippingAddress] = await Promise.all([
+    searchParams,
     getRegistryAdmin(),
     getSetting(SHIPPING_ADDRESS),
   ]);
@@ -36,6 +41,12 @@ export default async function AdminRegistry() {
         <h1 className="font-display text-3xl font-semibold text-maroon">Gift Registry</h1>
         <p className="mt-1 text-sm text-foreground/60">{items.length} items</p>
       </div>
+
+      {added && (
+        <div className="rounded-2xl border border-sage/40 bg-sage/10 px-5 py-3 text-sm text-foreground/80">
+          ✓ Added <span className="font-medium">{added}</span> to the registry.
+        </div>
+      )}
 
       {/* Shipping address shown on the public registry page */}
       <div className="space-y-2 rounded-2xl border border-gold/25 bg-white/60 p-5">
@@ -68,7 +79,7 @@ export default async function AdminRegistry() {
       </form>
 
       {/* Items list */}
-      <div className="space-y-4">
+      <div id="items" className="scroll-mt-24 space-y-4">
         {items.map((it) => (
           <div key={it.id} className="rounded-2xl border border-gold/25 bg-white/60 p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">

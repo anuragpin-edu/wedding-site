@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
-import { Bricolage_Grotesque } from "next/font/google";
+import { Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
@@ -9,11 +9,11 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-// Modern, fresh display type for headings (not a classic serif).
-const display = Bricolage_Grotesque({
+// Display serif for headings (as deployed on bunnymetanu.com).
+const display = Cormorant_Garamond({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {

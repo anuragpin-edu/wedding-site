@@ -17,15 +17,15 @@ export default function EventCard({ event }: { event: Event }) {
   return (
     <article className="overflow-hidden rounded-2xl border border-gold/25 bg-white/60 shadow-sm">
       <div
-        className={`flex h-36 flex-col items-center justify-center gap-2 bg-gradient-to-br text-white ${banner} sm:h-44`}
+        className={`flex h-24 flex-col items-center justify-center gap-1.5 bg-gradient-to-br text-white ${banner} sm:h-28`}
       >
-        <EventArt name={event.name} className="h-10 w-10 drop-shadow-sm sm:h-12 sm:w-12" />
-        <span className="font-display text-2xl font-semibold drop-shadow-sm sm:text-3xl">
+        <EventArt name={event.name} className="h-8 w-8 drop-shadow-sm" />
+        <span className="font-display text-2xl font-semibold drop-shadow-sm">
           {event.name}
         </span>
       </div>
 
-      <div className="space-y-3 p-5 text-center sm:p-6">
+      <div className="space-y-2.5 p-5 text-center">
         <div className="space-y-1.5">
           <p className="flex items-center justify-center gap-2 font-medium text-foreground">
             <CalendarIcon className="h-4 w-4 text-gold" />

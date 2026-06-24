@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { registryEnabled } from "@/lib/features";
-import BunnyMark from "@/components/BunnyMark";
 
 const allLinks = [
   { href: "/", label: "Home" },
@@ -20,12 +19,9 @@ export default function Nav() {
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3">
         <Link
           href="/"
-          className="flex items-center gap-2 font-display text-xl font-semibold tracking-wide text-maroon"
+          className="font-display text-xl font-semibold tracking-wide text-maroon"
         >
-          <BunnyMark className="h-6 w-6 text-maroon" />
-          <span>
-            A <span className="text-marigold">&amp;</span> T
-          </span>
+          A <span className="text-marigold">&amp;</span> T
         </Link>
         <ul className="flex items-center gap-4 text-sm sm:gap-7 sm:text-[15px]">
           {links.slice(1).map((l) => (
