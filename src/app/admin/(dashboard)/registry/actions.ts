@@ -47,11 +47,12 @@ export async function createItem(formData: FormData) {
 export async function updateItem(formData: FormData) {
   await requireAdmin();
   const id = (formData.get("id") ?? "").toString();
+  const title = (formData.get("title") ?? "").toString().trim();
   const supabase = createServiceClient();
   await supabase
     .from("registry_items")
     .update({
-      title: (formData.get("title") ?? "").toString().trim(),
+      title,
       description: (formData.get("description") ?? "").toString().trim() || null,
       price: num(formData.get("price")),
       store_url: (formData.get("store_url") ?? "").toString().trim(),
@@ -61,15 +62,23 @@ export async function updateItem(formData: FormData) {
     .eq("id", id);
   revalidatePath("/admin/registry");
   revalidatePath("/registry");
+  redirect(`/admin/registry?updated=${encodeURIComponent(title)}#items`);
 }
 
 export async function deleteItem(formData: FormData) {
   await requireAdmin();
   const id = (formData.get("id") ?? "").toString();
   const supabase = createServiceClient();
+  // Grab the title first so we can confirm what was removed.
+  const { data: item } = await supabase
+    .from("registry_items")
+    .select("title")
+    .eq("id", id)
+    .maybeSingle();
   await supabase.from("registry_items").delete().eq("id", id);
   revalidatePath("/admin/registry");
   revalidatePath("/registry");
+  redirect(`/admin/registry?deleted=${encodeURIComponent(item?.title ?? "item")}#items`);
 }
 
 // Release a claim: free the item and mark its active claims released (kept for

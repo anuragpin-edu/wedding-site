@@ -1,5 +1,6 @@
 import "server-only";
 import { createServiceClient } from "@/lib/supabase/service";
+import { reconcileExpiredHolds } from "@/lib/registry";
 import type { Event, RegistryItem } from "@/types/database";
 
 export type AdminGuest = {
@@ -98,6 +99,7 @@ function holdLive(held_until: string | null): boolean {
 // for the couple's reference. Contact info is admin-only and never public.
 export async function getRegistryAdmin(): Promise<AdminRegistryItem[]> {
   const supabase = createServiceClient();
+  await reconcileExpiredHolds();
   const [{ data: items }, { data: claims }, { data: parties }] = await Promise.all([
     supabase
       .from("registry_items")

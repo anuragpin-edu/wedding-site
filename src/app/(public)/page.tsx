@@ -7,9 +7,9 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero — placeholder gradient until real photos land in Phase 7 */}
-      <section className="relative isolate overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-cream via-background to-marigold/15" />
+      {/* Hero — transparent so the site-wide pattern flows through continuously
+          (no separate boxed background). */}
+      <section>
         <div className="mx-auto flex max-w-3xl flex-col items-center px-5 py-20 text-center sm:py-28">
           <p className="text-sm uppercase tracking-[0.3em] text-gold">
             We&apos;re getting married

@@ -15,11 +15,37 @@ function isHoldLive(held_until: string | null): boolean {
   return held_until != null && new Date(held_until).getTime() > Date.now();
 }
 
+// Actually free up items whose planning hold has expired: flip them back to
+// available in the DB and release their stale claims. Runs whenever the
+// registry is loaded (public or admin), so the database — not just the
+// displayed status — stays correct after the 6-hour window.
+export async function reconcileExpiredHolds(): Promise<void> {
+  const supabase = createServiceClient();
+  const nowIso = new Date().toISOString();
+
+  const { data: expired } = await supabase
+    .from("registry_items")
+    .update({ status: "available", held_until: null })
+    .eq("status", "planning")
+    .lt("held_until", nowIso)
+    .select("id");
+
+  if (expired && expired.length) {
+    await supabase
+      .from("registry_claims")
+      .update({ released: true })
+      .in("registry_item_id", expired.map((e) => e.id))
+      .eq("status", "planning")
+      .eq("released", false);
+  }
+}
+
 // Loads all registry items in display order, with their *effective* status:
 // an item counts as taken only if purchased, or if it has a live (non-expired)
 // planning hold. Contact info is never read into the view — only the name.
 export async function getRegistryItems(): Promise<RegistryItemView[]> {
   const supabase = createServiceClient();
+  await reconcileExpiredHolds();
 
   const [{ data: items }, { data: claims }] = await Promise.all([
     supabase
