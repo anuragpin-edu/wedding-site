@@ -37,6 +37,9 @@ yarn-error.log*
 # local dev helpers (kept out of the repo)
 /scripts/seed-*.mjs
 
+# stray redirect-output file that occasionally appears on Windows
+/1
+
 # vercel
 .vercel
 

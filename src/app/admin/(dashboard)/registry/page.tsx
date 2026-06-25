@@ -6,6 +6,7 @@ import ShippingAddressEditor from "@/components/admin/ShippingAddressEditor";
 import { PencilIcon, TrashIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Gift Registry" };
 
 const input =
   "w-full rounded-lg border border-gold/30 bg-white px-3 py-2 text-sm outline-none focus:border-maroon";
@@ -23,16 +24,29 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-export default async function AdminRegistry() {
-  const [items, shippingAddress] = await Promise.all([
+export default async function AdminRegistry({
+  searchParams,
+}: {
+  searchParams: Promise<{ added?: string; updated?: string; deleted?: string }>;
+}) {
+  const [{ added, updated, deleted }, items, shippingAddress] = await Promise.all([
+    searchParams,
     getRegistryAdmin(),
     getSetting(SHIPPING_ADDRESS),
   ]);
 
+  const confirmation = added
+    ? { text: "Added", name: added }
+    : updated
+      ? { text: "Updated", name: updated }
+      : deleted
+        ? { text: "Removed", name: deleted }
+        : null;
+
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl font-semibold text-maroon">Registry</h1>
+        <h1 className="font-display text-3xl font-semibold text-maroon">Gift Registry</h1>
         <p className="mt-1 text-sm text-foreground/60">{items.length} items</p>
       </div>
 
@@ -67,14 +81,20 @@ export default async function AdminRegistry() {
       </form>
 
       {/* Items list */}
-      <div className="space-y-4">
+      <div id="items" className="scroll-mt-24 space-y-4">
+        {confirmation && (
+          <div className="rounded-2xl border border-sage/40 bg-sage/10 px-5 py-3 text-sm text-foreground/80">
+            ✓ {confirmation.text} <span className="font-medium">{confirmation.name}</span>
+            {confirmation.text === "Removed" ? "" : " in the registry"}.
+          </div>
+        )}
         {items.map((it) => (
           <div key={it.id} className="rounded-2xl border border-gold/25 bg-white/60 p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
                   <p className="font-medium text-foreground">{it.title}</p>
-                  <StatusBadge status={it.status} />
+                  <StatusBadge status={it.effective_status} />
                 </div>
                 <p className="text-sm text-foreground/60">
                   {it.price != null ? `$${it.price.toFixed(2)}` : "—"} ·{" "}

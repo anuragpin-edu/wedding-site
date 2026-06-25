@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import ResetForm from "@/components/admin/ResetForm";
 
 export const metadata: Metadata = {
-  title: "Admin — Set new password",
+  title: "Set new password",
   robots: { index: false, follow: false },
 };
 

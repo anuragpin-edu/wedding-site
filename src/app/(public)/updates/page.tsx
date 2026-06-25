@@ -3,7 +3,7 @@ import EnableUpdates from "@/components/EnableUpdates";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export const metadata: Metadata = {
-  title: "Updates — Anurag & Thanmai",
+  title: "Updates",
   description: "The latest wedding news and announcements.",
 };
 

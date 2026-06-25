@@ -3,7 +3,7 @@ import EventCard from "@/components/EventCard";
 import { getEvents } from "@/lib/getEvents";
 
 export const metadata: Metadata = {
-  title: "Events — Anurag & Thanmai",
+  title: "Events",
   description:
     "Haldi, Sangeeth & Mehendi, and the Wedding — details, times, venues, and dress codes.",
 };
@@ -12,7 +12,7 @@ export default async function EventsPage() {
   const events = await getEvents();
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-16">
+    <div className="mx-auto max-w-xl px-5 py-16">
       <div className="mb-10 text-center">
         <h1 className="font-display text-4xl font-semibold text-maroon sm:text-5xl">
           Our Events
@@ -27,7 +27,7 @@ export default async function EventsPage() {
           Event details are coming soon — check back shortly.
         </p>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {events.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}

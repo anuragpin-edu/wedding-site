@@ -2,6 +2,7 @@ import { getAdminUser } from "@/lib/admin";
 import ProfileForm from "@/components/admin/ProfileForm";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Profile" };
 
 export default async function AdminProfile() {
   const user = await getAdminUser();

@@ -3,7 +3,7 @@ import RsvpClient from "@/components/RsvpClient";
 import { getEventsForForm } from "@/lib/rsvp";
 
 export const metadata: Metadata = {
-  title: "RSVP — Anurag & Thanmai",
+  title: "RSVP",
   description: "Let us know if you'll be joining us, and for which celebrations.",
 };
 

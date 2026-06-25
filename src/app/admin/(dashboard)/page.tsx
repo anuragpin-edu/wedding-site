@@ -2,16 +2,16 @@ import Link from "next/link";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Overview" };
 
 async function getOverview() {
   const supabase = createServiceClient();
-  const [parties, guests, events, attendance, items, claims] = await Promise.all([
+  const [parties, guests, events, attendance, items] = await Promise.all([
     supabase.from("parties").select("id", { count: "exact", head: true }),
     supabase.from("guests").select("id", { count: "exact", head: true }),
     supabase.from("events").select("id, name, display_order").order("display_order"),
     supabase.from("event_attendance").select("event_id, attending").eq("attending", true),
-    supabase.from("registry_items").select("id, status"),
-    supabase.from("registry_claims").select("id, status, released"),
+    supabase.from("registry_items").select("id, status, held_until"),
   ]);
 
   const attendingByEvent = new Map<string, number>();
@@ -19,15 +19,23 @@ async function getOverview() {
     attendingByEvent.set(row.event_id, (attendingByEvent.get(row.event_id) ?? 0) + 1);
   }
 
-  const activeClaims = (claims.data ?? []).filter((c) => !c.released);
+  // Count by the item's *effective* status (a planning hold past its expiry no
+  // longer counts), matching the public registry.
+  const now = Date.now();
+  const itemRows = items.data ?? [];
+  const planning = itemRows.filter(
+    (i) => i.status === "planning" && i.held_until != null && new Date(i.held_until).getTime() > now
+  ).length;
+  const purchased = itemRows.filter((i) => i.status === "purchased").length;
+
   return {
     parties: parties.count ?? 0,
     guests: guests.count ?? 0,
     events: events.data ?? [],
     attendingByEvent,
-    items: items.data ?? [],
-    planning: activeClaims.filter((c) => c.status === "planning").length,
-    purchased: activeClaims.filter((c) => c.status === "purchased").length,
+    items: itemRows,
+    planning,
+    purchased,
   };
 }
 
@@ -55,8 +63,8 @@ export default async function AdminOverview() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Parties" value={o.parties} />
         <Stat label="Total guests" value={o.guests} />
-        <Stat label="Registry: planning" value={o.planning} />
-        <Stat label="Registry: purchased" value={o.purchased} />
+        <Stat label="Gift registry: planning" value={o.planning} />
+        <Stat label="Gift registry: purchased" value={o.purchased} />
       </div>
 
       <div>
@@ -80,7 +88,7 @@ export default async function AdminOverview() {
           View all RSVPs
         </Link>
         <Link href="/admin/registry" className="rounded-full border border-maroon/30 px-5 py-2 text-sm font-medium text-maroon hover:bg-maroon/5">
-          Manage registry
+          Manage gift registry
         </Link>
       </div>
     </div>
