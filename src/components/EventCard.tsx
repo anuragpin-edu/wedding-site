@@ -3,26 +3,35 @@ import { formatEventDate, formatEventTime, mapsLink } from "@/lib/getEvents";
 import { MapPinIcon, CalendarIcon, ClockIcon, HangerIcon } from "@/components/icons";
 import AddToCalendar from "@/components/AddToCalendar";
 import EventArt from "@/components/EventArt";
+import Image from "next/image";
 
-// A tasteful per-event placeholder banner until real photos land (Phase 7).
-const banners: Record<string, string> = {
-  Haldi: "from-marigold/80 to-amber-300/70",
-  "Sangeeth & Mehendi": "from-maroon/80 to-rose-400/60",
-  Wedding: "from-gold/80 to-maroon/70",
+// Event banner image filenames mapped to event names.
+// These images should be uploaded to the Cloudflare R2 bucket.
+const bannerImages: Record<string, string> = {
+  Haldi: "events/haldi-banner.jpg",
+  "Sangeeth & Mehendi": "events/sangeeth-banner.jpg",
+  Wedding: "events/wedding-banner.jpg",
 };
 
 export default function EventCard({ event }: { event: Event }) {
-  const banner = banners[event.name] ?? "from-gold/70 to-maroon/60";
+  const bannerSrc = bannerImages[event.name] ?? "events/default-banner.jpg";
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-gold/25 bg-white/60 shadow-sm">
-      <div
-        className={`flex h-24 flex-col items-center justify-center gap-1.5 bg-gradient-to-br text-white ${banner} sm:h-28`}
-      >
-        <EventArt name={event.name} className="h-8 w-8 drop-shadow-sm" />
-        <span className="font-display text-2xl font-semibold drop-shadow-sm">
-          {event.name}
-        </span>
+    <article className="overflow-hidden rounded-2xl border border-gold/25 bg-white/60 shadow-sm relative">
+      <div className="relative flex h-24 flex-col items-center justify-center gap-1.5 sm:h-28 text-white overflow-hidden">
+        <Image 
+          src={bannerSrc}
+          alt={event.name}
+          fill
+          sizes="(max-width: 640px) 100vw, 50vw"
+          className="object-cover brightness-[0.7] z-0" 
+        />
+        <div className="relative z-10 flex flex-col items-center justify-center gap-1.5">
+          <EventArt name={event.name} className="h-8 w-8 drop-shadow-sm" />
+          <span className="font-display text-2xl font-semibold drop-shadow-sm">
+            {event.name}
+          </span>
+        </div>
       </div>
 
       <div className="space-y-2.5 p-5 text-center">
