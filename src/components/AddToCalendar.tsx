@@ -45,7 +45,7 @@ export default function AddToCalendar({ event }: { event: Event }) {
       </button>
 
       {open && (
-        <div className="absolute left-0 z-30 mt-2 w-48 overflow-hidden rounded-xl border border-gold/30 bg-white shadow-lg">
+        <div className="absolute left-1/2 -translate-x-1/2 z-30 mt-2 w-48 overflow-hidden rounded-xl border border-gold/30 bg-white shadow-lg">
           <a
             href={googleCalendarUrl(event)}
             target="_blank"

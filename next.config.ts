@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  images: {
+    loader: "custom",
+    loaderFile: "./src/lib/r2Loader.ts",
+  },
 };
 
 export default nextConfig;
