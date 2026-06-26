@@ -17,8 +17,8 @@ export default function EventCard({ event }: { event: Event }) {
   const bannerSrc = bannerImages[event.name] ?? "events/default-banner.jpg";
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-gold/25 bg-white/60 shadow-sm relative">
-      <div className="relative flex h-24 flex-col items-center justify-center gap-1.5 sm:h-28 text-white overflow-hidden">
+    <article className="rounded-2xl border border-gold/25 bg-white/60 shadow-sm relative">
+      <div className="relative flex h-24 flex-col items-center justify-center gap-1.5 sm:h-28 text-white overflow-hidden rounded-t-2xl">
         <Image 
           src={bannerSrc}
           alt={event.name}
