@@ -12,8 +12,8 @@ export async function listHomeMedia() {
     videos: [] as string[],
     error: null as string | null,
     debug: {
-      hasAccountId: !!accountId,
-      hasAccessKey: !!accessKeyId,
+      accountId: accountId,
+      accessKeyId: accessKeyId,
       hasSecret: !!secretAccessKey,
       bucketName,
       publicUrl,
