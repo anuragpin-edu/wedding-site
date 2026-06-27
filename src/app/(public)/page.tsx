@@ -3,6 +3,7 @@ import Countdown from "@/components/Countdown";
 import { getEvents, formatEventDate, formatEventTime } from "@/lib/getEvents";
 import { listHomeMedia } from "@/lib/getMedia";
 import HeroSlideshow from "@/components/HeroSlideshow";
+import EntryTracker from "@/components/EntryTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <EntryTracker entry="main" />
       {/* 1. Immersive Full-Screen Slideshow Hook */}
       <section className="relative h-screen w-full">
         {shuffled.length > 0 ? (
