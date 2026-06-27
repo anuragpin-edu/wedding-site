@@ -23,7 +23,7 @@ export default async function HomePage() {
   return (
     <>
       {/* 1. Immersive Full-Screen Slideshow Hook */}
-      <section className="relative h-screen w-full">
+      <section className="relative h-[100dvh] w-full">
         {shuffled.length > 0 ? (
           <HeroSlideshow media={shuffled} />
         ) : (

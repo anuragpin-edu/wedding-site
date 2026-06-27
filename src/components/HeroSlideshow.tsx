@@ -47,7 +47,7 @@ export default function HeroSlideshow({ media }: { media: MediaItem[] }) {
   if (media.length === 0) return null;
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-stone-950">
+    <div className="relative h-full w-full overflow-hidden bg-stone-950">
       {media.map((item, index) => {
         const isVisible = index === currentIndex;
         // Keep the previous and next slides in the DOM to allow for smooth 1-second crossfading
@@ -79,7 +79,7 @@ export default function HeroSlideshow({ media }: { media: MediaItem[] }) {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60 z-20 pointer-events-none" />
 
       {/* Scroll Down Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center animate-bounce text-white/90 pointer-events-none drop-shadow-lg">
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center animate-bounce text-white/90 pointer-events-none drop-shadow-lg">
         <span className="text-xs uppercase tracking-widest font-medium mb-2">Scroll to explore</span>
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
