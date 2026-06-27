@@ -67,6 +67,12 @@ export default async function HomePage() {
             >
               RSVP
             </Link>
+            <Link
+              href="/events"
+              className="rounded-full border border-maroon/30 bg-transparent px-8 py-3.5 text-sm font-medium text-maroon transition-all hover:bg-maroon/5 hover:border-maroon/50"
+            >
+              View Events
+            </Link>
           </div>
         </div>
       </section>
@@ -108,7 +114,15 @@ export default async function HomePage() {
           </div>
         )}
 
-        </section>
+        <div className="mt-12 text-center">
+          <Link
+            href="/events"
+            className="inline-flex items-center rounded-full bg-maroon px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-maroon-dark"
+          >
+            View event details &amp; directions &rarr;
+          </Link>
+        </div>
+      </section>
     </>
   );
 }

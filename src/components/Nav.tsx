@@ -11,6 +11,7 @@ export default async function Nav() {
 
   const allLinks = [
     { href: homeHref, label: "Home" },
+    ...(entry !== "wedding" ? [{ href: "/events", label: "Events" }] : []),
     { href: "/rsvp", label: "RSVP" },
     { href: "/registry", label: "Gift Registry" },
     { href: "/updates", label: "Updates" },
