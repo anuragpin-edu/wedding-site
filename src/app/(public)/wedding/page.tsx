@@ -1,13 +1,19 @@
 import Link from "next/link";
 import Countdown from "@/components/Countdown";
-import { getEvents, formatEventDate, formatEventTime } from "@/lib/getEvents";
+import { getEvents } from "@/lib/getEvents";
+import EventCard from "@/components/EventCard";
 import { listHomeMedia } from "@/lib/getMedia";
 import HeroSlideshow from "@/components/HeroSlideshow";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+export default async function WeddingPage() {
   const events = await getEvents();
+  // Filter for just the wedding event
+  const weddingEvent = events.find((event) =>
+    event.name.toLowerCase().includes("wedding")
+  );
+
   const mediaList = await listHomeMedia();
 
   // Combine all media into a single array
@@ -57,60 +63,37 @@ export default async function HomePage() {
               RSVP
             </Link>
             <Link
-              href="/events"
+              href="#event-details"
               className="rounded-full border border-maroon/30 bg-transparent px-8 py-3.5 text-sm font-medium text-maroon transition-all hover:bg-maroon/5 hover:border-maroon/50"
             >
-              View Events
+              View Details
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 3. The Celebrations Teaser */}
-      <section className="mx-auto max-w-4xl px-5 py-20">
-        <div className="mb-12 text-center">
+      {/* 3. The Celebration — Single Event Full Detail */}
+      <section id="event-details" className="mx-auto max-w-4xl px-5 py-16">
+        <div className="mb-10 text-center">
           <h2 className="font-display text-4xl font-semibold text-maroon">
-            The Celebrations
+            Wedding Event
           </h2>
           <p className="mt-2 text-foreground/65">
-            Three events across two joyful days.
+            We can&apos;t wait to celebrate with you.
           </p>
         </div>
 
-        {events.length === 0 ? (
+        {!weddingEvent ? (
           <p className="text-center text-foreground/60">
             Event details are coming soon.
           </p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
-            {events.map((event) => (
-              <Link
-                key={event.id}
-                href="/events"
-                className="group rounded-2xl border border-gold/25 bg-white/60 p-5 text-center transition-colors hover:border-maroon/40 hover:bg-white shadow-sm"
-              >
-                <p className="font-display text-xl font-semibold text-maroon">
-                  {event.name}
-                </p>
-                <p className="mt-2 text-sm text-foreground/70">
-                  {formatEventDate(event.date)}
-                </p>
-                <p className="text-sm text-maroon font-medium mt-1">
-                  {formatEventTime(event.start_time)}
-                </p>
-              </Link>
-            ))}
+          <div className="flex justify-center">
+            <div className="w-full max-w-md">
+              <EventCard event={weddingEvent} />
+            </div>
           </div>
         )}
-
-        <div className="mt-12 text-center">
-          <Link
-            href="/events"
-            className="inline-flex items-center rounded-full bg-maroon px-6 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-maroon-dark"
-          >
-            View event details &amp; directions &rarr;
-          </Link>
-        </div>
       </section>
     </>
   );

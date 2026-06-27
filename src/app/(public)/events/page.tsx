@@ -12,12 +12,12 @@ export default async function EventsPage() {
   const events = await getEvents();
 
   return (
-    <div className="mx-auto max-w-xl px-5 py-16">
-      <div className="mb-10 text-center">
+    <div className="mx-auto max-w-6xl px-5 py-16">
+      <div className="mb-12 text-center">
         <h1 className="font-display text-4xl font-semibold text-maroon sm:text-5xl">
           Our Events
         </h1>
-        <p className="mt-3 text-foreground/65">
+        <p className="mt-4 text-lg text-foreground/65">
           We&apos;d be honored to have you join us for each celebration.
         </p>
       </div>
@@ -27,7 +27,7 @@ export default async function EventsPage() {
           Event details are coming soon — check back shortly.
         </p>
       ) : (
-        <div className="space-y-6">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 items-stretch justify-center">
           {events.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
