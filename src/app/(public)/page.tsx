@@ -26,8 +26,17 @@ export default async function HomePage() {
         {shuffled.length > 0 ? (
           <HeroSlideshow media={shuffled} />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-stone-900 text-stone-500">
-            No media found. Please upload to Cloudflare R2.
+          <div className="flex h-full w-full flex-col items-center justify-center bg-stone-900 text-stone-500 gap-4 p-8">
+            <p className="text-xl">No media found. Please upload to Cloudflare R2.</p>
+            {/* @ts-ignore - rendering debug payload */}
+            {mediaList.error && <p className="text-red-400 font-mono text-sm max-w-xl text-center">{mediaList.error}</p>}
+            {/* @ts-ignore - rendering debug payload */}
+            {mediaList.debug && (
+              <pre className="text-xs font-mono text-stone-400 bg-black/50 p-4 rounded text-left">
+                {/* @ts-ignore */}
+                {JSON.stringify(mediaList.debug, null, 2)}
+              </pre>
+            )}
           </div>
         )}
       </section>

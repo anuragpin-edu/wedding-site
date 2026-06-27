@@ -1,9 +1,5 @@
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 
-/**
- * Dynamically fetches all media objects under the "home/" prefix from the Cloudflare R2 bucket.
- * Separates them into images and videos for easy consumption by the UI.
- */
 export async function listHomeMedia() {
   const accountId = process.env.CLOUDFLARE_R2_ACCOUNT_ID || "";
   const accessKeyId = process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || "";
@@ -14,10 +10,19 @@ export async function listHomeMedia() {
   const media = {
     images: [] as string[],
     videos: [] as string[],
+    error: null as string | null,
+    debug: {
+      hasAccountId: !!accountId,
+      hasAccessKey: !!accessKeyId,
+      hasSecret: !!secretAccessKey,
+      bucketName,
+      publicUrl,
+      NODE_ENV: process.env.NODE_ENV
+    }
   };
 
   if (!accountId || !accessKeyId || !secretAccessKey) {
-    console.warn("R2 credentials not set at runtime. Returning empty media arrays.");
+    media.error = "R2 credentials not set at runtime.";
     return media;
   }
 
@@ -57,8 +62,9 @@ export async function listHomeMedia() {
         }
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching media from R2:", error);
+    media.error = error.message || String(error);
   }
 
   return media;
