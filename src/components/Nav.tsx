@@ -2,7 +2,7 @@ import Link from "next/link";
 import { registryEnabled } from "@/lib/features";
 
 const allLinks = [
-  { href: "/wedding", label: "Home" },
+  { href: "/", label: "Home" },
   { href: "/rsvp", label: "RSVP" },
   { href: "/registry", label: "Gift Registry" },
   { href: "/updates", label: "Updates" },
@@ -17,7 +17,7 @@ export default function Nav() {
     <header className="sticky top-0 z-40 border-b border-gold/15 bg-background/60 backdrop-blur-md">
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3">
         <Link
-          href="/wedding"
+          href="/"
           className="font-display text-xl font-semibold tracking-wide text-maroon"
         >
           A <span className="text-marigold">&amp;</span> T
