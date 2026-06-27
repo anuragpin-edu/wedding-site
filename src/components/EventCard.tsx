@@ -6,7 +6,7 @@ import EventArt from "@/components/EventArt";
 
 const gradientBanners: Record<string, string> = {
   Haldi: "from-marigold/80 to-amber-300/70",
-  "Sangeeth & Mehendi": "from-maroon/80 to-rose-400/60",
+  "Sangeeth": "from-maroon/80 to-rose-400/60",
   Wedding: "from-gold/80 to-maroon/70",
 };
 

@@ -90,7 +90,7 @@ function WeddingArt(p: Props) {
 
 export default function EventArt({ name, className }: { name: string; className?: string }) {
   if (name === "Haldi") return <HaldiArt className={className} />;
-  if (name === "Sangeeth & Mehendi") return <SangeethArt className={className} />;
+  if (name === "Sangeeth") return <SangeethArt className={className} />;
   if (name === "Wedding") return <WeddingArt className={className} />;
   return null;
 }

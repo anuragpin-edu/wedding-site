@@ -21,11 +21,11 @@ export const metadata: Metadata = {
   // short name; this template adds the "AT - " prefix. (Link-preview titles
   // below use the full names and are unaffected.)
   title: {
-    default: "AT - Wedding",
-    template: "AT - %s",
+    template: "%s | Anurag & Thanmai",
+    default: "Anurag & Thanmai | August 22, 2026",
   },
   description:
-    "Join us as Anurag & Thanmai celebrate their wedding. Haldi, Sangeeth & Mehendi, and the Wedding — August 21–22, 2026 in Georgia.",
+    "Join us as Anurag & Thanmai celebrate their wedding. Haldi, Sangeeth, and the Wedding — August 21–22, 2026 in Georgia.",
   metadataBase: new URL("https://www.bunnymetanu.com"),
   openGraph: {
     title: "Anurag & Thanmai — August 22, 2026",
