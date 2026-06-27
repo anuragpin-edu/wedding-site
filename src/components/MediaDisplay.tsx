@@ -11,6 +11,7 @@ type MediaDisplayProps = {
   controls?: boolean; // Whether the video should have controls
   autoPlay?: boolean; // Whether the foreground video should autoplay
   onEnded?: () => void; // Callback when video finishes
+  onError?: () => void; // Callback when video errors
 };
 
 export default function MediaDisplay({ 
@@ -20,7 +21,8 @@ export default function MediaDisplay({
   className = "",
   controls = true,
   autoPlay = false,
-  onEnded
+  onEnded,
+  onError
 }: MediaDisplayProps) {
   const shouldLoop = !onEnded && autoPlay;
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -29,15 +31,16 @@ export default function MediaDisplay({
   useEffect(() => {
     if (type === "video") {
       if (autoPlay) {
-        // Use catch to prevent unhandled promise rejections if play is interrupted
-        videoRef.current?.play().catch(() => {});
+        videoRef.current?.play().catch(() => {
+          if (onError) onError();
+        });
         bgVideoRef.current?.play().catch(() => {});
       } else {
         videoRef.current?.pause();
         bgVideoRef.current?.pause();
       }
     }
-  }, [autoPlay, type]);
+  }, [autoPlay, type, onError]);
 
   return (
     <div className={`relative overflow-hidden bg-stone-950 ${className}`}>
@@ -53,6 +56,7 @@ export default function MediaDisplay({
             loop={shouldLoop} 
             muted 
             playsInline 
+            preload="auto"
             className="h-full w-full object-cover" 
           />
         )}
@@ -69,9 +73,11 @@ export default function MediaDisplay({
             controls={controls} 
             autoPlay={autoPlay}
             loop={shouldLoop}
-            muted={autoPlay}
+            muted
             playsInline
+            preload="auto"
             onEnded={onEnded}
+            onError={onError}
             className="h-full w-full object-contain drop-shadow-2xl rounded-sm" 
           />
         )}

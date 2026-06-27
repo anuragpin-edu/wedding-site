@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import MediaDisplay from "./MediaDisplay";
 
 type MediaItem = {
@@ -10,24 +10,39 @@ type MediaItem = {
 
 export default function HeroSlideshow({ media }: { media: MediaItem[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const mediaRef = useRef(media);
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % media.length);
-  };
+  // Keep mediaRef in sync without triggering timer resets
+  useEffect(() => {
+    mediaRef.current = media;
+  }, [media]);
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => {
+      const len = mediaRef.current.length;
+      return len > 0 ? (prev + 1) % len : 0;
+    });
+  }, []);
 
   useEffect(() => {
-    if (media.length === 0) return;
-    const current = media[currentIndex];
+    if (mediaRef.current.length === 0) return;
+    
+    if (timerRef.current) clearTimeout(timerRef.current);
+    
+    const current = mediaRef.current[currentIndex];
     
     if (current.type === "image") {
-      // 3 second timer for images
-      const timer = setTimeout(() => {
-        nextSlide();
-      }, 3000);
-      return () => clearTimeout(timer);
+      timerRef.current = setTimeout(() => nextSlide(), 3000);
+    } else {
+      // Watchdog timer for videos (15s fallback)
+      timerRef.current = setTimeout(() => nextSlide(), 15000);
     }
-    // For videos, we rely on the onEnded callback passed to MediaDisplay
-  }, [currentIndex, media]);
+    
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [currentIndex, nextSlide]);
 
   if (media.length === 0) return null;
 
@@ -52,6 +67,7 @@ export default function HeroSlideshow({ media }: { media: MediaItem[] }) {
                 autoPlay={isVisible}
                 controls={false}
                 onEnded={isVisible && item.type === "video" ? nextSlide : undefined}
+                onError={isVisible && item.type === "video" ? nextSlide : undefined}
                 className="h-full w-full"
               />
             )}

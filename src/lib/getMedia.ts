@@ -56,9 +56,9 @@ export async function listHomeMedia() {
         const baseUrl = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
         const url = `${baseUrl}/${item.Key}`;
 
-        if (ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "webp" || ext === "gif") {
+        if (ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "webp") {
           media.images.push(url);
-        } else if (ext === "mp4" || ext === "mov" || ext === "webm") {
+        } else if (ext === "mp4" || ext === "webm") {
           media.videos.push(url);
         }
       });
