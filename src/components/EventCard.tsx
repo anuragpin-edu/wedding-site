@@ -14,9 +14,9 @@ export default function EventCard({ event }: { event: Event }) {
   const gradient = gradientBanners[event.name] ?? "from-gold/70 to-maroon/60";
 
   return (
-    <article className="rounded-2xl border border-gold/25 bg-white/60 shadow-sm relative flex flex-col h-full overflow-hidden">
+    <article className="rounded-2xl border border-gold/25 bg-white/60 shadow-sm relative flex flex-col h-full transition-all hover:shadow-md">
       {/* Banner Header (Kept centered for visual impact) */}
-      <div className={`relative flex h-32 flex-col items-center justify-center gap-2 sm:h-40 text-white overflow-hidden bg-gradient-to-br ${gradient}`}>
+      <div className={`relative flex h-32 flex-col items-center justify-center gap-2 sm:h-40 text-white overflow-hidden rounded-t-2xl bg-gradient-to-br ${gradient}`}>
         <div className="relative z-10 flex flex-col items-center justify-center gap-2 px-4 text-center">
           <EventArt name={event.name} className="h-10 w-10 drop-shadow-sm opacity-90 sm:h-12 sm:w-12" />
           <span className="font-display text-3xl font-semibold drop-shadow-sm sm:text-4xl tracking-wide">
