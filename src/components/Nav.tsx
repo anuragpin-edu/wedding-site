@@ -1,25 +1,24 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { registryEnabled } from "@/lib/features";
 
-export default async function Nav() {
-  const cookieStore = await cookies();
-  const entry = cookieStore.get("entry")?.value;
-  
-  // If the user entered through the wedding silo, lock them into it.
-  const homeHref = entry === "wedding" ? "/wedding" : "/";
+export default function Nav({ silo }: { silo: "main" | "wedding" }) {
+  // If the user is in the wedding silo, lock them into it.
+  const homeHref = silo === "wedding" ? "/wedding" : "/";
+  const rsvpHref = silo === "wedding" ? "/wedding/rsvp" : "/rsvp";
+  const registryHref = silo === "wedding" ? "/wedding/registry" : "/registry";
+  const updatesHref = silo === "wedding" ? "/wedding/updates" : "/updates";
 
   const allLinks = [
     { href: homeHref, label: "Home" },
-    ...(entry !== "wedding" ? [{ href: "/events", label: "Events" }] : []),
-    { href: "/rsvp", label: "RSVP" },
-    { href: "/registry", label: "Gift Registry" },
-    { href: "/updates", label: "Updates" },
+    ...(silo === "main" ? [{ href: "/events", label: "Events" }] : []),
+    { href: rsvpHref, label: "RSVP" },
+    { href: registryHref, label: "Gift Registry" },
+    { href: updatesHref, label: "Updates" },
   ];
 
   // Hide the registry link when the feature is off (e.g. in production).
   const links = allLinks.filter(
-    (l) => l.href !== "/registry" || registryEnabled()
+    (l) => l.href !== registryHref || registryEnabled()
   );
   return (
     <header className="sticky top-0 z-40 border-b border-gold/15 bg-background/60 backdrop-blur-md">

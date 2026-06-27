@@ -1,4 +1,3 @@
-import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 
 export default function PublicLayout({
@@ -10,7 +9,6 @@ export default function PublicLayout({
     // One seamless patterned surface behind the whole public site — header,
     // content, and footer all share it, so nothing looks boxed.
     <div className="themed-pattern flex min-h-screen flex-col">
-      <Nav />
       <main className="animate-page flex-1">{children}</main>
       <Footer />
     </div>
