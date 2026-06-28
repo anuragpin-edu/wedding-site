@@ -1,8 +1,20 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import { registryEnabled } from "@/lib/features";
 import { getVariantConfig } from "@/lib/variants";
+import RegistryGrid from "@/components/RegistryGrid";
+import { getRegistryItems } from "@/lib/registry";
+import { getSetting, SHIPPING_ADDRESS } from "@/lib/settings";
+import CopyButton from "@/components/CopyButton";
+import ComingSoon from "@/components/ComingSoon";
+import { registryEnabled } from "@/lib/features";
 
+export const metadata: Metadata = {
+  title: "Gift Registry",
+  description:
+    "Our gift registry. Browse, buy from your favorite store, and claim a gift so others know it's taken.",
+};
+
+// Always reflect the latest claim state.
 export const dynamic = "force-dynamic";
 
 export default async function RegistryPage({
@@ -13,48 +25,49 @@ export default async function RegistryPage({
   const { variant } = await params;
   const config = getVariantConfig(variant);
 
-  if (!config.showRegistry || !registryEnabled()) {
+  if (!config.showRegistry) {
     notFound();
   }
 
-  // Real registry link placeholder
-  const registryUrl = "https://www.zola.com/registry/example";
+  // Hidden from the public until we're ready (REGISTRY_ENABLED=false in prod).
+  if (!registryEnabled()) {
+    return (
+      <ComingSoon
+        title="Gift Registry"
+        note="Our gift registry is being put together with love. Check back soon."
+      />
+    );
+  }
+
+  const [items, shippingAddress] = await Promise.all([
+    getRegistryItems(),
+    getSetting(SHIPPING_ADDRESS),
+  ]);
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-16 text-center">
-      <div className="mb-12 text-center">
-        <p className="text-sm uppercase tracking-[0.3em] text-gold">Registry</p>
-        <h1 className="mt-3 font-display text-4xl font-semibold text-maroon sm:text-5xl">
-          Our Gift Registry
+    <div className="mx-auto max-w-5xl px-5 py-16">
+      <div className="mb-10 text-center">
+        <h1 className="font-display text-4xl font-semibold text-maroon sm:text-5xl">
+          Gift Registry
         </h1>
-        <p className="mt-4 text-foreground/65 max-w-xl mx-auto">
-          Your presence at our wedding is the greatest gift of all. If it is your
-          wish to bless us with a gift, we would greatly appreciate a contribution
-          to our newlywed fund or a gift from our registry.
+        <p className="mx-auto mt-3 max-w-xl text-foreground/65">
+          Your presence is the greatest gift — but if you&apos;d like to give
+          something, here are a few ideas. Each links out to its store. Once you
+          buy (or plan to), claim it here so others know it&apos;s taken.
         </p>
       </div>
 
-      <a
-        href={registryUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-white border border-gold/30 p-8 shadow-sm transition-all hover:border-maroon/40 hover:shadow-md"
-      >
-        <div className="flex flex-col items-center gap-4">
-          {/* Placeholder for Zola logo or similar */}
-          <div className="h-12 w-32 bg-stone-100 flex items-center justify-center rounded text-sm text-stone-400 font-mono">
-            Zola Registry
-          </div>
-          <div className="flex items-center gap-2 text-maroon font-medium group-hover:text-maroon-dark">
-            View Registry 
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
+      {shippingAddress && (
+        <div className="mx-auto mb-10 max-w-md rounded-2xl border border-gold/30 bg-cream/40 p-5 text-center">
+          <p className="text-xs uppercase tracking-wide text-gold">Ship gifts to</p>
+          <p className="mt-2 whitespace-pre-wrap text-foreground/80">{shippingAddress}</p>
+          <div className="mt-3 flex justify-center">
+            <CopyButton text={shippingAddress} label="Copy address" />
           </div>
         </div>
-      </a>
+      )}
+
+      <RegistryGrid items={items} />
     </div>
   );
 }
