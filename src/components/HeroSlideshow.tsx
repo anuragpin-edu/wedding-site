@@ -28,10 +28,12 @@ export default function HeroSlideshow({ media }: { media: MediaItem[] }) {
   useEffect(() => {
     if (mediaRef.current.length === 0) return;
     
+    // Clear any existing timer
     if (timerRef.current) clearTimeout(timerRef.current);
     
     const current = mediaRef.current[currentIndex];
     
+    // Set a new timer for the current slide
     if (current.type === "image") {
       timerRef.current = setTimeout(() => nextSlide(), 3000);
     } else {
@@ -65,6 +67,7 @@ export default function HeroSlideshow({ media }: { media: MediaItem[] }) {
                 url={item.url}
                 type={item.type}
                 autoPlay={isVisible}
+                preload={isVisible ? "auto" : isNext ? "metadata" : "none"}
                 controls={false}
                 onEnded={isVisible && item.type === "video" ? nextSlide : undefined}
                 onError={isVisible && item.type === "video" ? nextSlide : undefined}
