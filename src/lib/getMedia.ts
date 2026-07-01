@@ -94,3 +94,23 @@ export async function listHomeMedia() {
 
   return media;
 }
+
+export async function signMediaUrl(keyOrUrl: string | null): Promise<string | null> {
+  if (!keyOrUrl) return null;
+  if (keyOrUrl.startsWith('http://') || keyOrUrl.startsWith('https://')) {
+    return keyOrUrl;
+  }
+  const s3Client = getS3Client();
+  if (!s3Client) return keyOrUrl;
+  
+  try {
+    const command = new GetObjectCommand({ Bucket: getBucketName(), Key: keyOrUrl });
+    // Strip leading slashes if they were accidentally saved in the database
+    command.input.Key = keyOrUrl.startsWith('/') ? keyOrUrl.slice(1) : keyOrUrl;
+    return await getSignedUrl(s3Client, command, { expiresIn: 900 });
+  } catch (error) {
+    console.error("Error signing individual URL:", error);
+    return keyOrUrl;
+  }
+}
+

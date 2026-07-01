@@ -1,6 +1,7 @@
 import "server-only";
 import { createServiceClient } from "@/lib/supabase/service";
 import type { RegistryItem } from "@/types/database";
+import { signMediaUrl } from "@/lib/getMedia";
 
 // A "planning" hold lasts this long before the gift auto-reopens.
 export const HOLD_HOURS = 6;
@@ -74,7 +75,7 @@ export async function getRegistryItems(): Promise<RegistryItemView[]> {
     }
   }
 
-  return (items ?? []).map((item) => {
+  const signedItems = await Promise.all((items ?? []).map(async (item) => {
     let effective: RegistryItemView["effective_status"] = "available";
     let claimedBy: string | null = null;
 
@@ -88,6 +89,10 @@ export async function getRegistryItems(): Promise<RegistryItemView[]> {
       claimedBy = latestClaim.get(item.id)?.name ?? null;
     }
 
-    return { ...item, effective_status: effective, claimed_by: claimedBy };
-  });
+    const signedImageUrl = await signMediaUrl(item.image_url);
+
+    return { ...item, image_url: signedImageUrl, effective_status: effective, claimed_by: claimedBy };
+  }));
+
+  return signedItems;
 }
