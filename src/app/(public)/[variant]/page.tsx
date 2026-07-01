@@ -4,6 +4,7 @@ import { getEvents, formatEventDate, formatEventTime } from "@/lib/getEvents";
 import { listHomeMedia } from "@/lib/getMedia";
 import HeroSlideshow from "@/components/HeroSlideshow";
 import EventCard from "@/components/EventCard";
+import TraditionAccent from "@/components/TraditionAccent";
 import { getVariantConfig, filterEventsForVariant } from "@/lib/variants";
 
 export const dynamic = "force-dynamic";
@@ -37,29 +38,14 @@ export default async function VariantHomePage({
 
   return (
     <>
-      {/* 1. Immersive Full-Screen Slideshow Hook */}
-      <section className="relative h-[100dvh] w-full">
-        {shuffled.length > 0 ? (
-          <HeroSlideshow media={shuffled} />
-        ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center bg-stone-900 text-stone-500 gap-4 p-8">
-            <p className="text-xl">No media found. Please upload to Cloudflare R2.</p>
-            {/* @ts-ignore - rendering debug payload */}
-            {mediaList.error && <p className="text-red-400 font-mono text-sm max-w-xl text-center">{mediaList.error}</p>}
-            {/* @ts-ignore - rendering debug payload */}
-            {mediaList.debug && (
-              <pre className="text-xs font-mono text-stone-400 bg-black/50 p-4 rounded text-left">
-                {/* @ts-ignore */}
-                {JSON.stringify(mediaList.debug, null, 2)}
-              </pre>
-            )}
-          </div>
-        )}
-      </section>
-
-      {/* 2. The Reveal (Title, Timer, RSVP) */}
-      <section className="relative z-40 py-24 text-center sm:py-32">
+      {/* 1. We Are Getting Married (Reveal with Tradition Accent & Countdown) */}
+      <section className="relative z-40 pt-20 pb-24 text-center sm:pt-28 sm:pb-32">
         <div className="mx-auto flex max-w-3xl flex-col items-center px-5">
+          {/* Subtle Pelli Pathrika Accent */}
+          <div className="mb-6 w-24 sm:w-32 text-gold">
+            <TraditionAccent />
+          </div>
+          
           <p className="text-sm uppercase tracking-[0.3em] text-foreground/70">
             We&apos;re getting married
           </p>
@@ -91,61 +77,76 @@ export default async function VariantHomePage({
         </div>
       </section>
 
-      {/* 3. The Celebrations (Teaser vs Single Event) */}
-      {isSingleEvent ? (
-        <section id="event-details" className="mx-auto max-w-4xl px-5 py-16">
-          <div className="mb-10 text-center">
-            <h2 className="font-display text-4xl font-semibold text-maroon">
-              {events[0]?.name || "Event Details"}
-            </h2>
-            <p className="mt-2 text-foreground/65">
-              We can&apos;t wait to celebrate with you.
-            </p>
+      {/* 2. Glimpses of Us (Slideshow Gallery) */}
+      <section className="py-16">
+        <div className="mx-auto max-w-5xl px-5 mb-10 text-center">
+          <h2 className="font-display text-4xl font-semibold text-maroon">
+            Glimpses of Us
+          </h2>
+          <p className="mt-2 text-foreground/65">
+            Moments we cherish.
+          </p>
+        </div>
+        
+        <div className="mx-auto max-w-6xl px-5">
+          <div className="relative h-[65vh] sm:h-[75vh] w-full rounded-2xl overflow-hidden shadow-lg border border-gold/20">
+            {shuffled.length > 0 ? (
+              <HeroSlideshow media={shuffled} />
+            ) : (
+              <div className="flex h-full w-full flex-col items-center justify-center bg-stone-900 text-stone-500 gap-4 p-8">
+                <p className="text-xl">No media found. Please upload to Cloudflare R2.</p>
+                {/* @ts-ignore */}
+                {mediaList.error && <p className="text-red-400 font-mono text-sm">{mediaList.error}</p>}
+              </div>
+            )}
           </div>
+        </div>
+      </section>
 
+      {/* 4. The Celebrations (Event Cards) */}
+      <section id="event-details" className="mx-auto max-w-4xl px-5 py-20">
+        <div className="mb-12 text-center">
+          <h2 className="font-display text-4xl font-semibold text-maroon">
+            {isSingleEvent ? events[0]?.name : "The Celebrations"}
+          </h2>
+          <p className="mt-2 text-foreground/65">
+            {isSingleEvent ? "We can't wait to celebrate with you." : "Join us for our joyful events."}
+          </p>
+        </div>
+
+        {events.length === 0 ? (
+          <p className="text-center text-foreground/60">
+            Event details are coming soon.
+          </p>
+        ) : isSingleEvent ? (
           <div className="flex justify-center">
             <div className="w-full max-w-md">
               <EventCard event={events[0]} />
             </div>
           </div>
-        </section>
-      ) : (
-        <section className="mx-auto max-w-4xl px-5 py-20">
-          <div className="mb-12 text-center">
-            <h2 className="font-display text-4xl font-semibold text-maroon">
-              The Celebrations
-            </h2>
-            <p className="mt-2 text-foreground/65">
-              Join us for our joyful events.
-            </p>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-3">
+            {events.map((event) => (
+              <Link
+                key={event.id}
+                href={resolvePath("/events")}
+                className="group rounded-2xl border border-gold/25 bg-white/60 p-5 text-center transition-colors hover:border-maroon/40 hover:bg-white shadow-sm"
+              >
+                <p className="font-display text-xl font-semibold text-maroon">
+                  {event.name}
+                </p>
+                <p className="mt-2 text-sm text-foreground/70">
+                  {formatEventDate(event.date)}
+                </p>
+                <p className="text-sm text-maroon font-medium mt-1">
+                  {formatEventTime(event.start_time)}
+                </p>
+              </Link>
+            ))}
           </div>
+        )}
 
-          {events.length === 0 ? (
-            <p className="text-center text-foreground/60">
-              Event details are coming soon.
-            </p>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-3">
-              {events.map((event) => (
-                <Link
-                  key={event.id}
-                  href={resolvePath("/events")}
-                  className="group rounded-2xl border border-gold/25 bg-white/60 p-5 text-center transition-colors hover:border-maroon/40 hover:bg-white shadow-sm"
-                >
-                  <p className="font-display text-xl font-semibold text-maroon">
-                    {event.name}
-                  </p>
-                  <p className="mt-2 text-sm text-foreground/70">
-                    {formatEventDate(event.date)}
-                  </p>
-                  <p className="text-sm text-maroon font-medium mt-1">
-                    {formatEventTime(event.start_time)}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          )}
-
+        {!isSingleEvent && (
           <div className="mt-12 text-center">
             <Link
               href={resolvePath("/events")}
@@ -154,8 +155,8 @@ export default async function VariantHomePage({
               View event details &amp; directions &rarr;
             </Link>
           </div>
-        </section>
-      )}
+        )}
+      </section>
     </>
   );
 }

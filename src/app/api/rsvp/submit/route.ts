@@ -217,5 +217,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, token });
+  return NextResponse.json({ ok: true, token, guests: resolved });
 }

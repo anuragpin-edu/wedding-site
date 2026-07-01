@@ -81,13 +81,6 @@ export default function HeroSlideshow({ media }: { media: MediaItem[] }) {
       {/* Dark Scrim overlay for readability of elements scrolling up over it */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60 z-20 pointer-events-none" />
 
-      {/* Scroll Down Indicator */}
-      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center animate-bounce text-white/90 pointer-events-none drop-shadow-lg">
-        <span className="text-xs uppercase tracking-widest font-medium mb-2">Scroll to explore</span>
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
-      </div>
     </div>
   );
 }
