@@ -77,11 +77,11 @@ export default async function VariantHomePage({
         </div>
       </section>
 
-      {/* 2. Glimpses of Us (Slideshow Gallery) */}
+      {/* 2. Our Gallery (Slideshow Gallery) */}
       <section className="py-16">
         <div className="mx-auto max-w-5xl px-5 mb-10 text-center">
           <h2 className="font-display text-4xl font-semibold text-maroon">
-            Glimpses of Us
+            Our Gallery
           </h2>
           <p className="mt-2 text-foreground/65">
             Moments we cherish.
