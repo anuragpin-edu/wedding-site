@@ -38,8 +38,8 @@ export default async function VariantHomePage({
 
   return (
     <>
-      {/* 1. We Are Getting Married (Reveal with Tradition Accent) */}
-      <section className="relative z-40 pt-20 pb-16 text-center sm:pt-28 sm:pb-24 bg-background">
+      {/* 1. We Are Getting Married (Reveal with Tradition Accent & Countdown) */}
+      <section className="relative z-40 pt-20 pb-24 text-center sm:pt-28 sm:pb-32">
         <div className="mx-auto flex max-w-3xl flex-col items-center px-5">
           {/* Subtle Pelli Pathrika Accent */}
           <div className="mb-6 w-24 sm:w-32 text-gold">
@@ -56,7 +56,11 @@ export default async function VariantHomePage({
             August 22, 2026 &middot; Cumming, Georgia
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-12">
+            <Countdown />
+          </div>
+
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
             <Link
               href={resolvePath("/rsvp")}
               className="rounded-full bg-maroon px-8 py-3.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-maroon-dark hover:scale-105"
@@ -73,15 +77,8 @@ export default async function VariantHomePage({
         </div>
       </section>
 
-      {/* 2. Countdown */}
-      <section className="py-12 bg-cream/40 border-y border-gold/15">
-        <div className="mx-auto max-w-4xl px-5">
-          <Countdown />
-        </div>
-      </section>
-
-      {/* 3. Glimpses of Us (Slideshow Gallery) */}
-      <section className="py-20 bg-background">
+      {/* 2. Glimpses of Us (Slideshow Gallery) */}
+      <section className="py-16">
         <div className="mx-auto max-w-5xl px-5 mb-10 text-center">
           <h2 className="font-display text-4xl font-semibold text-maroon">
             Glimpses of Us

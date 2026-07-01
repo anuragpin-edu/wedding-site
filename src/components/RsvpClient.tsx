@@ -156,6 +156,9 @@ export default function RsvpClient({ events }: { events: Event[] }) {
       if (!res.ok) throw new Error(json.error || "Something went wrong.");
       setToken(json.token);
       saveToken(json.token);
+      if (json.guests && json.guests.length === people.length) {
+        setPeople((prev) => prev.map((p, i) => ({ ...p, id: json.guests[i].id })));
+      }
       setEditing(true);
       setRemovedGuestIds([]);
       setStatus("done");
