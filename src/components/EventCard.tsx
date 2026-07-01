@@ -3,6 +3,7 @@ import { formatEventDate, formatEventTime, mapsLink } from "@/lib/getEvents";
 import { MapPinIcon, CalendarIcon, ClockIcon, HangerIcon } from "@/components/icons";
 import AddToCalendar from "@/components/AddToCalendar";
 import EventArt from "@/components/EventArt";
+import MapChooser from "@/components/MapChooser";
 
 const gradientBanners: Record<string, string> = {
   Haldi: "from-marigold/80 to-amber-300/70",
@@ -53,14 +54,13 @@ export default function EventCard({ event }: { event: Event }) {
           <div className="space-y-1">
             <p className="font-medium text-foreground">{event.venue}</p>
             <p className="leading-snug">{event.address}</p>
-            <a
-              href={mapsLink(event.address)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-1 font-medium text-maroon underline decoration-gold/40 underline-offset-4 hover:decoration-maroon transition-colors"
+            <MapChooser
+              address={event.address}
+              venue={event.venue}
+              buttonClassName="inline-block mt-1 font-medium text-maroon underline decoration-gold/40 underline-offset-4 hover:decoration-maroon transition-colors text-left"
             >
-              View on Google Maps &rarr;
-            </a>
+              Get Directions &rarr;
+            </MapChooser>
           </div>
         </div>
 
