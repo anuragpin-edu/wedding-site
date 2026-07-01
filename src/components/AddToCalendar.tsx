@@ -27,7 +27,7 @@ export default function AddToCalendar({ event }: { event: Event }) {
     a.download = `${event.name.replace(/\s+/g, "-").toLowerCase()}.ics`;
     a.click();
     URL.revokeObjectURL(url);
-    setOpen(false);
+    setTimeout(() => setOpen(false), 500);
   }
 
   const itemClass =
@@ -50,7 +50,7 @@ export default function AddToCalendar({ event }: { event: Event }) {
             href={googleCalendarUrl(event)}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => setOpen(false)}
+            onClick={() => setTimeout(() => setOpen(false), 500)}
             className={itemClass}
           >
             Google Calendar

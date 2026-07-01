@@ -101,7 +101,7 @@ export default function MapChooser({
                   href={option.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => setTimeout(() => setIsOpen(false), 500)}
                   className="px-3 py-2 text-sm font-medium text-foreground hover:bg-black/5 rounded-lg transition-colors flex items-center justify-between group"
                 >
                   {option.name}
