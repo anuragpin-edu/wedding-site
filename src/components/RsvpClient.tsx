@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import type { Event } from "@/types/database";
 import type { PartyData, PartyGuest } from "@/lib/rsvp";
-import { formatEventDate, formatEventTime, mapsLink } from "@/lib/eventFormat";
+import { formatEventDate, formatEventTime } from "@/lib/eventFormat";
+import MapChooser from "@/components/MapChooser";
 import { MapPinIcon } from "@/components/icons";
 import Turnstile, { turnstileConfigured } from "@/components/Turnstile";
 
@@ -356,16 +357,11 @@ export default function RsvpClient({ events }: { events: Event[] }) {
                             {event.venue ? `${event.venue} — ` : ""}
                             {event.address}
                           </p>
-                          <a
-                            href={mapsLink(event.address)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="mt-0.5 inline-flex items-center gap-1 text-xs text-maroon underline decoration-gold/40 underline-offset-2 hover:decoration-maroon"
-                          >
-                            <MapPinIcon className="h-3 w-3" />
-                            View on Google Maps
-                          </a>
+                          <MapChooser
+                            address={event.address}
+                            venue={event.venue}
+                            buttonClassName="mt-1.5 inline-flex items-center gap-1.5 text-xs text-maroon hover:underline text-left"
+                          />
                         </div>
                       </div>
                     </div>
