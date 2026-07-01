@@ -48,7 +48,11 @@ export default function MediaDisplay({
   }, [autoPlay, type, onError]);
 
   return (
-    <div className={`relative overflow-hidden bg-stone-950 ${className}`}>
+    <div 
+      className={`relative overflow-hidden bg-stone-950 ${className} select-none`}
+      onContextMenu={(e) => e.preventDefault()}
+      onDragStart={(e) => e.preventDefault()}
+    >
       {/* Blurred Background Layer (Vibrant but slightly dim) */}
       <div className="absolute inset-0 z-0 opacity-60 blur-3xl scale-125">
         {type === "image" ? (
@@ -61,6 +65,8 @@ export default function MediaDisplay({
             loop={shouldLoop} 
             muted 
             playsInline 
+            controlsList="nodownload"
+            disablePictureInPicture
             preload={preload}
             className="h-full w-full object-cover" 
           />
@@ -81,6 +87,8 @@ export default function MediaDisplay({
               loop={shouldLoop}
               muted
               playsInline
+              controlsList="nodownload"
+              disablePictureInPicture
               preload={preload}
               onEnded={onEnded}
               onError={onError}
