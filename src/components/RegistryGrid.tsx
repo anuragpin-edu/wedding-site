@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+
 import type { RegistryItemView } from "@/lib/registry";
 import Turnstile, { turnstileConfigured } from "@/components/Turnstile";
 
@@ -252,19 +252,6 @@ function Card({ item }: { item: RegistryItemView }) {
         (dimmed ? "opacity-75" : "")
       }
     >
-      <div className="relative flex h-44 items-center justify-center overflow-hidden bg-gradient-to-br from-cream to-marigold/20">
-        {item.image_url ? (
-          <Image 
-            src={item.image_url} 
-            alt={item.title} 
-            fill
-            sizes="(max-width: 640px) 100vw, 33vw"
-            className="object-cover" 
-          />
-        ) : (
-          <span className="font-display text-lg text-gold">No image yet</span>
-        )}
-      </div>
 
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-start justify-between gap-3">
