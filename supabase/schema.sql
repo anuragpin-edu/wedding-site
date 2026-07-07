@@ -132,7 +132,7 @@ INSERT INTO keep_alive (id, pinged_at) VALUES (1, now());
 -- ============================================================
 
 INSERT INTO events (name, date, start_time, venue, address, dress_code, display_order) VALUES
-  ('Haldi',               '2026-08-21', '07:30', 'Farmhouse',        '1515 Blue Ridge Dr, Cumming, GA 30041',        'Yellow',             1),
+  ('Haldi',               '2026-08-21', '07:00', 'Farmhouse',        '1515 Blue Ridge Dr, Cumming, GA 30041',        'Yellow',             1),
   ('Sangeeth',            '2026-08-21', '19:00', 'Venue',            '4680 W Morton Rd, Johns Creek, GA 30022',      'Indo-Western',       2),
   ('Wedding',             '2026-08-22', '12:06', 'Banjara Banquets', '1656 Buford Hwy, Cumming, GA 30041',           'Indian Traditional', 3);
 

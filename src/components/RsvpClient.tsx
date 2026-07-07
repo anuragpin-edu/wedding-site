@@ -18,8 +18,8 @@ type Person = {
 
 const LS_KEY = "rsvp:current";
 
-function allYes(events: Event[]): Record<string, boolean> {
-  return Object.fromEntries(events.map((e) => [e.id, true]));
+function allNo(events: Event[]): Record<string, boolean> {
+  return Object.fromEntries(events.map((e) => [e.id, false]));
 }
 
 function toPerson(g: PartyGuest): Person {
@@ -59,7 +59,7 @@ export default function RsvpClient({ events }: { events: Event[] }) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [people, setPeople] = useState<Person[]>([
-    { full_name: "", dietary_notes: "", is_primary: true, attendance: allYes(events) },
+    { full_name: "", dietary_notes: "", is_primary: true, attendance: allNo(events) },
   ]);
   const [removedGuestIds, setRemovedGuestIds] = useState<string[]>([]);
 
@@ -111,7 +111,7 @@ export default function RsvpClient({ events }: { events: Event[] }) {
   function addPerson() {
     setPeople((ps) => [
       ...ps,
-      { full_name: "", dietary_notes: "", is_primary: false, attendance: allYes(events) },
+      { full_name: "", dietary_notes: "", is_primary: false, attendance: allNo(events) },
     ]);
   }
   function removePerson(i: number) {
@@ -202,7 +202,7 @@ export default function RsvpClient({ events }: { events: Event[] }) {
     setEditing(false);
     setEmail("");
     setPhone("");
-    setPeople([{ full_name: "", dietary_notes: "", is_primary: true, attendance: allYes(events) }]);
+    setPeople([{ full_name: "", dietary_notes: "", is_primary: true, attendance: allNo(events) }]);
     setRemovedGuestIds([]);
     setStatus("idle");
     setMessage("");
