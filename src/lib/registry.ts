@@ -9,7 +9,6 @@ export const HOLD_HOURS = 6;
 export type RegistryItemView = RegistryItem & {
   // Computed availability after applying hold expiry.
   effective_status: "available" | "planning" | "purchased";
-  claimed_by: string | null; // claimer first name, only when taken
 };
 
 function isHoldLive(held_until: string | null): boolean {
@@ -77,7 +76,6 @@ export async function getRegistryItems(): Promise<RegistryItemView[]> {
 
   const signedItems = await Promise.all((items ?? []).map(async (item) => {
     let effective: RegistryItemView["effective_status"] = "available";
-    let claimedBy: string | null = null;
 
     if (item.status === "purchased") {
       effective = "purchased";
@@ -85,13 +83,9 @@ export async function getRegistryItems(): Promise<RegistryItemView[]> {
       effective = "planning";
     }
 
-    if (effective !== "available") {
-      claimedBy = latestClaim.get(item.id)?.name ?? null;
-    }
-
     const signedImageUrl = await signMediaUrl(item.image_url);
 
-    return { ...item, image_url: signedImageUrl, effective_status: effective, claimed_by: claimedBy };
+    return { ...item, image_url: signedImageUrl, effective_status: effective };
   }));
 
   return signedItems;

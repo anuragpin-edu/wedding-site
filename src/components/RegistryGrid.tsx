@@ -232,18 +232,17 @@ function ClaimForm({
 }
 
 function Card({ item }: { item: RegistryItemView }) {
-  const [state, setState] = useState<{
-    status: "available" | "planning" | "purchased";
-    name: string | null;
-  }>({ status: item.effective_status, name: item.claimed_by });
+  const [status, setStatus] = useState<"available" | "planning" | "purchased">(
+    item.effective_status
+  );
   const [showForm, setShowForm] = useState(false);
 
   function handleClaimed(r: ClaimResult) {
-    setState({ status: r.status, name: r.name });
+    setStatus(r.status);
     setShowForm(false);
   }
 
-  const dimmed = state.status === "purchased";
+  const dimmed = status === "purchased";
 
   return (
     <article
@@ -274,14 +273,14 @@ function Card({ item }: { item: RegistryItemView }) {
           View in store ↗
         </a>
 
-        {state.status === "purchased" ? (
+        {status === "purchased" ? (
           <div className="mt-4 rounded-lg border border-sage/40 bg-sage/10 px-3 py-2 text-center text-sm text-foreground/75">
-            Purchased{state.name ? <> by <span className="font-medium">{state.name}</span></> : ""}
+            Purchased ✓
           </div>
-        ) : state.status === "planning" ? (
+        ) : status === "planning" ? (
           <div className="mt-4 space-y-2">
             <div className="rounded-lg border border-marigold/40 bg-marigold/10 px-3 py-2 text-center text-sm text-foreground/75">
-              On hold{state.name ? <> by <span className="font-medium">{state.name}</span></> : ""}
+              On hold
               <span className="block text-[11px] text-foreground/55">
                 Soft hold — reopens if not confirmed within 6 hours
               </span>
