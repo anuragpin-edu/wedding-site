@@ -364,9 +364,6 @@ export default function RegistryGrid({ items }: { items: RegistryItemView[] }) {
       {giftCards.length > 0 && (
         <div>
           <h2 className="mb-6 font-display text-2xl font-semibold text-maroon">Gift Cards</h2>
-          <p className="mb-6 text-sm text-foreground/60">
-            Gift cards can be purchased in any amount — no need to claim, just buy and gift!
-          </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {giftCards.map((item) => (
               <GiftCardCard key={item.id} item={item} />
