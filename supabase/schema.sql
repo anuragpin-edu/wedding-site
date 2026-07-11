@@ -69,6 +69,8 @@ CREATE TABLE registry_items (
   status         TEXT NOT NULL DEFAULT 'available'
                    CHECK (status IN ('available', 'planning', 'purchased')),
   held_until     TIMESTAMPTZ,
+  category       TEXT NOT NULL DEFAULT 'gift'
+                   CHECK (category IN ('gift', 'gift_card')),
   display_order  INT,
   created_at     TIMESTAMPTZ DEFAULT now()
 );

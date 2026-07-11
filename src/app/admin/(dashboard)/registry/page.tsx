@@ -24,6 +24,21 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+function CategoryBadge({ category }: { category: string }) {
+  const isGiftCard = category === "gift_card";
+  return (
+    <span
+      className={`rounded-full border px-2.5 py-0.5 text-xs ${
+        isGiftCard
+          ? "bg-gold/10 text-gold border-gold/40"
+          : "bg-cream/50 text-foreground/50 border-gold/20"
+      }`}
+    >
+      {isGiftCard ? "Gift Card" : "Gift"}
+    </span>
+  );
+}
+
 export default async function AdminRegistry({
   searchParams,
 }: {
@@ -73,6 +88,10 @@ export default async function AdminRegistry({
         <input className={input} name="store_url" placeholder="Store URL *" required />
         <input className={input} name="image_url" placeholder="Image URL (optional)" />
         <input className={input} name="display_order" type="number" placeholder="Display order (optional)" />
+        <select className={input} name="category">
+          <option value="gift">Gift (claimable)</option>
+          <option value="gift_card">Gift Card (no claim)</option>
+        </select>
         <div className="sm:col-span-2">
           <button className="rounded-full bg-maroon px-5 py-2 text-sm font-medium text-white hover:bg-maroon-dark">
             Add item
@@ -94,7 +113,8 @@ export default async function AdminRegistry({
               <div>
                 <div className="flex items-center gap-2">
                   <p className="font-medium text-foreground">{it.title}</p>
-                  <StatusBadge status={it.effective_status} />
+                  <CategoryBadge category={it.category} />
+                  {it.category !== "gift_card" && <StatusBadge status={it.effective_status} />}
                 </div>
                 <p className="text-sm text-foreground/60">
                   {it.price != null ? `$${it.price.toFixed(2)}` : "—"} ·{" "}
@@ -104,7 +124,7 @@ export default async function AdminRegistry({
                 </p>
               </div>
               <div className="flex items-center gap-1">
-                {it.claim && (
+                {it.claim && it.category !== "gift_card" && (
                   <form action={releaseClaim}>
                     <input type="hidden" name="id" value={it.id} />
                     <button className="rounded-full border border-marigold/50 px-3 py-1 text-xs text-gold hover:bg-marigold/10">
@@ -133,7 +153,7 @@ export default async function AdminRegistry({
               </div>
             </div>
 
-            {it.claim && (
+            {it.claim && it.category !== "gift_card" && (
               <div className="mt-3 rounded-lg border border-gold/20 bg-cream/30 px-4 py-3 text-sm">
                 <p className="text-foreground/80">
                   <span className="font-medium">{it.claim.status === "purchased" ? "Purchased" : "Planning"}</span>{" "}

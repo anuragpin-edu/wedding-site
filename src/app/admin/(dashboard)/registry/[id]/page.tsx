@@ -46,6 +46,11 @@ export default async function EditRegistryItem({
         <input className={input} name="image_url" defaultValue={item.image_url ?? ""} />
         <label className="block text-xs uppercase tracking-wide text-foreground/55">Display order</label>
         <input className={input} name="display_order" type="number" defaultValue={item.display_order ?? ""} />
+        <label className="block text-xs uppercase tracking-wide text-foreground/55">Category</label>
+        <select className={input} name="category" defaultValue={item.category ?? "gift"}>
+          <option value="gift">Gift (claimable)</option>
+          <option value="gift_card">Gift Card (no claim)</option>
+        </select>
         <button className="rounded-full bg-maroon px-5 py-2 text-sm font-medium text-white hover:bg-maroon-dark">
           Save changes
         </button>

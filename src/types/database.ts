@@ -46,6 +46,7 @@ export type RegistryItem = {
   store_url: string;
   status: "available" | "planning" | "purchased";
   held_until: string | null;
+  category: "gift" | "gift_card";
   display_order: number | null;
   created_at: string;
 };

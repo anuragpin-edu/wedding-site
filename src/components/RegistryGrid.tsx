@@ -318,7 +318,31 @@ function Card({ item }: { item: RegistryItemView }) {
   );
 }
 
+/** Gift card card — no claim/hold flow, just a link to purchase. */
+function GiftCardCard({ item }: { item: RegistryItemView }) {
+  return (
+    <article className="flex flex-col overflow-hidden rounded-2xl border border-gold/25 bg-white/60">
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="font-display text-xl font-semibold text-foreground">{item.title}</h3>
+        {item.description && <p className="mt-2 text-sm text-foreground/70">{item.description}</p>}
+        <div className="mt-4 flex-1" />
+        <a
+          href={item.store_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-flex w-full items-center justify-center rounded-full bg-maroon px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-maroon-dark"
+        >
+          Purchase gift card ↗
+        </a>
+      </div>
+    </article>
+  );
+}
+
 export default function RegistryGrid({ items }: { items: RegistryItemView[] }) {
+  const gifts = items.filter((i) => i.category !== "gift_card");
+  const giftCards = items.filter((i) => i.category === "gift_card");
+
   if (items.length === 0) {
     return (
       <p className="text-center text-foreground/60">
@@ -326,11 +350,31 @@ export default function RegistryGrid({ items }: { items: RegistryItemView[] }) {
       </p>
     );
   }
+
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {items.map((item) => (
-        <Card key={item.id} item={item} />
-      ))}
+    <div className="space-y-12">
+      {gifts.length > 0 && (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {gifts.map((item) => (
+            <Card key={item.id} item={item} />
+          ))}
+        </div>
+      )}
+
+      {giftCards.length > 0 && (
+        <div>
+          <h2 className="mb-6 font-display text-2xl font-semibold text-maroon">Gift Cards</h2>
+          <p className="mb-6 text-sm text-foreground/60">
+            Gift cards can be purchased in any amount — no need to claim, just buy and gift!
+          </p>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {giftCards.map((item) => (
+              <GiftCardCard key={item.id} item={item} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

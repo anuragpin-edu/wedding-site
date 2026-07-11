@@ -30,6 +30,7 @@ export async function createItem(formData: FormData) {
   await requireAdmin();
   const title = (formData.get("title") ?? "").toString().trim();
   const supabase = createServiceClient();
+  const category = (formData.get("category") ?? "").toString().trim();
   await supabase.from("registry_items").insert({
     title,
     description: (formData.get("description") ?? "").toString().trim() || null,
@@ -37,6 +38,7 @@ export async function createItem(formData: FormData) {
     store_url: (formData.get("store_url") ?? "").toString().trim(),
     image_url: (formData.get("image_url") ?? "").toString().trim() || null,
     display_order: num(formData.get("display_order")),
+    category: category === "gift_card" ? "gift_card" : "gift",
   });
   revalidatePath("/admin/registry");
   revalidatePath("/registry");
@@ -49,6 +51,7 @@ export async function updateItem(formData: FormData) {
   const id = (formData.get("id") ?? "").toString();
   const title = (formData.get("title") ?? "").toString().trim();
   const supabase = createServiceClient();
+  const category = (formData.get("category") ?? "").toString().trim();
   await supabase
     .from("registry_items")
     .update({
@@ -58,6 +61,7 @@ export async function updateItem(formData: FormData) {
       store_url: (formData.get("store_url") ?? "").toString().trim(),
       image_url: (formData.get("image_url") ?? "").toString().trim() || null,
       display_order: num(formData.get("display_order")),
+      category: category === "gift_card" ? "gift_card" : "gift",
     })
     .eq("id", id);
   revalidatePath("/admin/registry");
