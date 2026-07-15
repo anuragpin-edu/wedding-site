@@ -1,6 +1,6 @@
 import type { Event } from "@/types/database";
 
-export type VariantId = "default" | "wedding" | "celebrate";
+export type VariantId = "default" | "wedding" | "celebrate" | "invite";
 
 export interface VariantConfig {
   id: VariantId;
@@ -27,6 +27,12 @@ export const SITE_VARIANTS: Record<VariantId, VariantConfig> = {
     basePath: "/celebrate",
     showRegistry: false,
     eventFilters: "all",
+  },
+  invite: {
+    id: "invite",
+    basePath: "/invite",
+    showRegistry: true,
+    eventFilters: ["sangeeth", "wedding"],
   },
 };
 
