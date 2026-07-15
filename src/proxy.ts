@@ -32,6 +32,11 @@ export async function proxy(request: NextRequest) {
       return authResponse;
     }
   }
+  if (pathname === "/festivities" || pathname.startsWith("/festivities/")) {
+    if (request.headers.get("x-middleware-rewrite")) {
+      return authResponse;
+    }
+  }
 
 
   let variant = "default";
@@ -43,6 +48,9 @@ export async function proxy(request: NextRequest) {
   } else if (pathname === "/celebrate" || pathname.startsWith("/celebrate/")) {
     variant = "celebrate";
     subPath = pathname.replace(/^\/celebrate/, "");
+  } else if (pathname === "/festivities" || pathname.startsWith("/festivities/")) {
+    variant = "festivities";
+    subPath = pathname.replace(/^\/festivities/, "");
   } else if (pathname === "/default" || pathname.startsWith("/default/")) {
     variant = "default";
     subPath = pathname.replace(/^\/default/, "");
