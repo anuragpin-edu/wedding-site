@@ -125,7 +125,7 @@ export default async function VariantHomePage({
             </div>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className={`grid gap-4 ${events.length === 2 ? "sm:grid-cols-2 max-w-2xl mx-auto" : "sm:grid-cols-3"}`}>
             {events.map((event) => (
               <Link
                 key={event.id}
