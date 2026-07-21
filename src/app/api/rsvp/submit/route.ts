@@ -1,27 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { createServiceClient } from "@/lib/supabase/service";
-import { normalizeEmail, normalizePhone } from "@/lib/rsvp";
 import { limitByIp, getClientIp } from "@/lib/rateLimit";
 import { verifyTurnstile } from "@/lib/turnstile";
-
-type IncomingGuest = {
-  id?: string;
-  full_name: string;
-  dietary_notes?: string | null;
-  is_primary?: boolean;
-  attendance: Record<string, boolean>;
-};
-
-type Payload = {
-  token?: string | null;
-  email: string;
-  phone: string;
-  guests: IncomingGuest[];
-  removedGuestIds?: string[];
-};
-
-const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { rsvpSubmitSchema } from "@/lib/validation/rsvp";
 
 // Create or update an RSVP via self-registration. A party is keyed by the
 // primary's email + mobile; submitting again with the same pair updates the
@@ -35,9 +17,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: Payload & { turnstile_token?: string };
+  let body;
   try {
-    body = await req.json();
+    const raw = await req.json();
+    const result = rsvpSubmitSchema.safeParse(raw);
+    if (!result.success) {
+      // Return the first validation error
+      const firstError = result.error.issues[0];
+      return NextResponse.json({ error: firstError.message }, { status: 400 });
+    }
+    body = result.data;
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
@@ -49,21 +38,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const email = normalizeEmail(body.email ?? "");
-  const phone = normalizePhone(body.phone ?? "");
-  const incoming = (body.guests ?? []).filter(
-    (g) => g.full_name && g.full_name.trim().length > 0
-  );
-
-  if (!emailRe.test(email)) {
-    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
-  }
-  if (phone.length < 7) {
-    return NextResponse.json({ error: "Please enter a valid mobile number." }, { status: 400 });
-  }
-  if (incoming.length === 0) {
-    return NextResponse.json({ error: "Please enter at least your own name." }, { status: 400 });
-  }
+  const email = body.email;
+  const phone = body.phone;
+  const incoming = body.guests;
 
   const primary = incoming.find((g) => g.is_primary) ?? incoming[0];
   const displayName = primary.full_name.trim();

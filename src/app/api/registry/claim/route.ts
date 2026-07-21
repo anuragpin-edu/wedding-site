@@ -3,19 +3,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { HOLD_HOURS } from "@/lib/registry";
 import { limitByIp, getClientIp } from "@/lib/rateLimit";
 import { verifyTurnstile } from "@/lib/turnstile";
-
-type Payload = {
-  item_id: string;
-  intent: "planning" | "purchased";
-  claimer_name: string;
-  claimer_email: string;
-  claimer_phone: string;
-  claimer_message?: string | null;
-  order_id?: string | null; // required when intent === 'purchased'
-  invite_code?: string | null; // cached from RSVP, used to link the party
-};
-
-const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { claimSubmitSchema } from "@/lib/validation/registry";
 
 // Claim a registry item as either a soft "planning" hold (auto-expires after
 // HOLD_HOURS) or a permanent "purchased". The grab against registry_items is
@@ -32,9 +20,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: Payload & { turnstile_token?: string };
+  let body;
   try {
-    body = await req.json();
+    const raw = await req.json();
+    const result = claimSubmitSchema.safeParse(raw);
+    if (!result.success) {
+      return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+    }
+    body = result.data;
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
@@ -46,33 +39,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const name = body.claimer_name?.trim();
-  const email = body.claimer_email?.trim();
-  const phone = body.claimer_phone?.trim();
-  const message = body.claimer_message?.trim() || null;
-  const orderId = body.order_id?.trim() || null;
-  const intent = body.intent === "purchased" ? "purchased" : "planning";
-
-  if (!body.item_id || !name || !email || !phone) {
-    return NextResponse.json(
-      { error: "Name, email, and phone are all required." },
-      { status: 400 }
-    );
-  }
-  if (!emailRe.test(email)) {
-    return NextResponse.json(
-      { error: "Please enter a valid email address." },
-      { status: 400 }
-    );
-  }
-  // A confirmed purchase must carry an order ID — this is the deliberate step
-  // that prevents an accidental click from marking an item as bought.
-  if (intent === "purchased" && !orderId) {
-    return NextResponse.json(
-      { error: "An order ID is required to confirm a purchase." },
-      { status: 400 }
-    );
-  }
+  const name = body.claimer_name;
+  const email = body.claimer_email;
+  const phone = body.claimer_phone;
+  const message = body.claimer_message;
+  const orderId = body.order_id;
+  const intent = body.intent;
 
   const supabase = createServiceClient();
   const nowIso = new Date().toISOString();

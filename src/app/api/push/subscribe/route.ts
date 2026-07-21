@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { limitByIp } from "@/lib/rateLimit";
+import { pushSubscribeSchema } from "@/lib/validation/push";
 
 // Store a browser's push subscription. Upsert by endpoint so re-subscribing on
 // the same browser doesn't create duplicates.
@@ -13,23 +14,21 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: {
-    endpoint?: string;
-    keys?: { p256dh?: string; auth?: string };
-    userAgent?: string;
-  };
+  let body;
   try {
-    body = await req.json();
+    const raw = await req.json();
+    const result = pushSubscribeSchema.safeParse(raw);
+    if (!result.success) {
+      return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+    }
+    body = result.data;
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
 
   const endpoint = body.endpoint;
-  const p256dh = body.keys?.p256dh;
-  const auth = body.keys?.auth;
-  if (!endpoint || !p256dh || !auth) {
-    return NextResponse.json({ error: "Invalid subscription." }, { status: 400 });
-  }
+  const p256dh = body.keys.p256dh;
+  const auth = body.keys.auth;
 
   const supabase = createServiceClient();
   const { error } = await supabase

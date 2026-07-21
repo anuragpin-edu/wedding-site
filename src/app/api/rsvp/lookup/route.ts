@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findParty } from "@/lib/rsvp";
 import { limitByIp } from "@/lib/rateLimit";
+import { rsvpLookupSchema } from "@/lib/validation/rsvp";
 
 // Retrieve an existing RSVP by the primary's email and/or mobile. At least one
 // is required. Both still match exactly (no partial/typeahead), so there's no
@@ -17,21 +18,20 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { email?: string; phone?: string };
+  let body;
   try {
-    body = await req.json();
+    const raw = await req.json();
+    const result = rsvpLookupSchema.safeParse(raw);
+    if (!result.success) {
+      return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+    }
+    body = result.data;
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
 
-  const email = body.email?.trim();
-  const phone = body.phone?.trim();
-  if (!email && !phone) {
-    return NextResponse.json(
-      { error: "Enter the email or mobile you RSVP'd with." },
-      { status: 400 }
-    );
-  }
+  const email = body.email;
+  const phone = body.phone;
 
   const result = await findParty(email, phone);
 

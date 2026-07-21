@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import type { RegistryItemView } from "@/lib/registry";
 import Turnstile, { turnstileConfigured } from "@/components/Turnstile";
+import { claimSubmitSchema } from "@/lib/validation/registry";
 
 function priceLabel(price: number | null) {
   if (price == null) return null;
@@ -106,29 +107,41 @@ function ClaimForm({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  function contactValid() {
-    if (!name.trim() || !email.trim() || !phone.trim()) {
-      setError("Name, email, and phone are all required.");
-      return false;
-    }
-    return true;
-  }
-
   async function submit(intent: "planning" | "purchased") {
-    if (!contactValid()) return;
-    if (intent === "purchased" && !orderId.trim()) {
-      setError("Please enter your order ID to confirm the purchase.");
+    const raw = {
+      item_id: itemId,
+      intent,
+      claimer_name: name,
+      claimer_email: email,
+      claimer_phone: phone,
+      claimer_message: message,
+      order_id: orderId,
+      invite_code: cachedInviteCode(),
+      turnstile_token: tsToken || undefined,
+    };
+
+    const val = claimSubmitSchema.safeParse(raw);
+    if (!val.success) {
+      setError(val.error.issues[0].message);
       return;
     }
+
     if (turnstileConfigured && !tsToken) {
       setError("Please complete the spam check below.");
       return;
     }
     setBusy(true);
     setError("");
-    const contact = { name: name.trim(), email: email.trim(), phone: phone.trim() };
+    const contact = { name: val.data.claimer_name, email: val.data.claimer_email, phone: val.data.claimer_phone };
     try {
-      const result = await postClaim(itemId, intent, contact, message, orderId.trim(), tsToken);
+      const result = await postClaim(
+        itemId, 
+        intent, 
+        contact, 
+        val.data.claimer_message ?? "", 
+        val.data.order_id ?? "", 
+        tsToken
+      );
       // Remember a hold so confirming it later doesn't re-ask for details;
       // clear it once the purchase is confirmed.
       if (intent === "planning") setHold(itemId, contact);
@@ -141,7 +154,11 @@ function ClaimForm({
   }
 
   function goToPurchase() {
-    if (!contactValid()) return;
+    // Only basic check before switching to purchase tab
+    if (!name.trim() || !email.trim() || !phone.trim()) {
+      setError("Name, email, and phone are all required.");
+      return;
+    }
     setError("");
     setMode("purchase");
   }

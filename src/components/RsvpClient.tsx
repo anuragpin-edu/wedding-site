@@ -7,6 +7,7 @@ import { formatEventDate, formatEventTime } from "@/lib/eventFormat";
 import MapChooser from "@/components/MapChooser";
 import { MapPinIcon } from "@/components/icons";
 import Turnstile, { turnstileConfigured } from "@/components/Turnstile";
+import { rsvpSubmitSchema, rsvpLookupSchema } from "@/lib/validation/rsvp";
 
 type Person = {
   id?: string;
@@ -123,16 +124,22 @@ export default function RsvpClient({ events }: { events: Event[] }) {
   }
 
   async function submit() {
-    if (!email.trim() || !phone.trim()) {
+    const raw = {
+      token,
+      email,
+      phone,
+      guests: people,
+      removedGuestIds,
+      turnstile_token: tsToken || undefined,
+    };
+
+    const val = rsvpSubmitSchema.safeParse(raw);
+    if (!val.success) {
       setStatus("error");
-      setMessage("Your email and mobile are required.");
+      setMessage(val.error.issues[0].message);
       return;
     }
-    if (people.some((p) => p.full_name.trim() === "")) {
-      setStatus("error");
-      setMessage("Please enter a name for everyone in your party.");
-      return;
-    }
+
     if (turnstileConfigured && !tsToken) {
       setStatus("error");
       setMessage("Please complete the spam check below.");
@@ -171,8 +178,9 @@ export default function RsvpClient({ events }: { events: Event[] }) {
   }
 
   async function doLookup() {
-    if (!lkEmail.trim() && !lkPhone.trim()) {
-      setLkError("Enter the email or mobile you RSVP'd with.");
+    const val = rsvpLookupSchema.safeParse({ email: lkEmail, phone: lkPhone });
+    if (!val.success) {
+      setLkError(val.error.issues[0].message);
       return;
     }
     setLkBusy(true);
